@@ -1,64 +1,56 @@
-import { NavLink, Outlet } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import {
-  LayoutDashboard, Warehouse, Boxes, Layers, Archive,
-  Package, Tag, ClipboardList, ArrowLeftRight, LogOut
-} from 'lucide-react';
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-const navItems = [
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/warehouses', label: 'Warehouses', icon: Warehouse },
-  { to: '/zones', label: 'Zones', icon: Layers },
-  { to: '/racks', label: 'Racks', icon: Boxes },
-  { to: '/bins', label: 'Bins', icon: Archive },
-  { to: '/categories', label: 'Categories', icon: Tag },
-  { to: '/products', label: 'Products', icon: Package },
-  { to: '/inventory', label: 'Inventory', icon: ClipboardList },
-  { to: '/movements', label: 'Stock Movements', icon: ArrowLeftRight },
+const navLinks = [
+  { to: "/", label: "Dashboard", icon: "🏠" },
+  { to: "/warehouses", label: "Warehouses", icon: "🏭" },
+  { to: "/products", label: "Products", icon: "📦" },
+  { to: "/inventory", label: "Inventory", icon: "📋" },
+  { to: "/ai", label: "AI Insights", icon: "🤖" },
+  { to: "/approvals", label: "Approvals", icon: "✅" },
+  { to: "/notifications", label: "Notifications", icon: "🔔" },
+  { to: "/reports", label: "Reports", icon: "📊" },
 ];
-
 export default function Layout() {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleLogout = () => { logout(); navigate("/login"); };
 
   return (
-    <div className="min-h-screen flex bg-gray-100">
-      <aside className="w-60 bg-slate-900 text-slate-200 flex flex-col">
-        <div className="px-5 py-5 border-b border-slate-700">
-          <h1 className="text-lg font-bold text-white leading-tight">Warehouse</h1>
-          <p className="text-xs text-slate-400">Space Optimization System</p>
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Sidebar */}
+      <aside className="w-56 bg-white border-r border-gray-200 flex flex-col shadow-sm">
+        <div className="px-6 py-5 border-b border-gray-100">
+          <span className="text-lg font-bold text-blue-700">🏬 WarehouseOS</span>
         </div>
-        <nav className="flex-1 overflow-y-auto py-3">
-          {navItems.map(({ to, label, icon: Icon }) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-5 py-2.5 text-sm transition-colors ${
-                  isActive
-                    ? 'bg-slate-800 text-white border-r-2 border-blue-500'
-                    : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-                }`
-              }
-            >
-              <Icon size={18} />
-              {label}
-            </NavLink>
-          ))}
+        <nav className="flex-1 px-3 py-4 space-y-1">
+          {navLinks.map(link => {
+            const active = location.pathname === link.to;
+            return (
+              <Link key={link.to} to={link.to}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${active ? "bg-blue-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}>
+                <span>{link.icon}</span>
+                <span>{link.label}</span>
+              </Link>
+            );
+          })}
         </nav>
-        <div className="border-t border-slate-700 p-4">
-          <p className="text-xs text-slate-400">Signed in as</p>
-          <p className="text-sm font-medium text-white truncate">{user?.username}</p>
-          <p className="text-xs text-slate-500 capitalize mb-3">{user?.role}</p>
-          <button
-            onClick={logout}
-            className="w-full flex items-center justify-center gap-2 bg-red-600/90 hover:bg-red-600 text-white text-sm py-2 rounded transition-colors"
-          >
-            <LogOut size={16} />
-            Logout
+        <div className="px-3 py-4 border-t border-gray-100 space-y-1">
+          <Link to="/change-password"
+            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100">
+            🔑 Change Password
+          </Link>
+          <button onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-red-600 hover:bg-red-50 text-left">
+            🚪 Logout
           </button>
         </div>
       </aside>
-      <main className="flex-1 overflow-y-auto p-6">
+
+      {/* Main content */}
+      <main className="flex-1 overflow-y-auto">
         <Outlet />
       </main>
     </div>

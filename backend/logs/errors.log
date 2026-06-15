@@ -11,3 +11,29 @@
 [2026-06-15 21:25:08,865] WARNING django.server - "GET /api/ HTTP/1.1" 404 3323
 [2026-06-15 21:30:24,459] WARNING django.request - Unauthorized: /api/notifications/
 [2026-06-15 21:30:24,467] WARNING django.server - "GET /api/notifications/ HTTP/1.1" 401 5339
+[2026-06-16 09:00:56,090] WARNING django.request - Unauthorized: /api/auth/me/
+[2026-06-16 09:00:56,093] WARNING django.server - "GET /api/auth/me/ HTTP/1.1" 401 156
+[2026-06-16 09:00:59,453] WARNING django.request - Unauthorized: /api/auth/login/
+[2026-06-16 09:00:59,454] WARNING django.server - "POST /api/auth/login/ HTTP/1.1" 401 166
+[2026-06-16 09:01:20,206] WARNING django.request - Unauthorized: /api/auth/me/
+[2026-06-16 09:01:20,208] WARNING django.server - "GET /api/auth/me/ HTTP/1.1" 401 156
+[2026-06-16 09:01:25,952] WARNING django.request - Unauthorized: /api/auth/me/
+[2026-06-16 09:01:25,954] WARNING django.server - "GET /api/auth/me/ HTTP/1.1" 401 156
+[2026-06-16 09:02:05,448] WARNING django.request - Unauthorized: /api/auth/me/
+[2026-06-16 09:02:05,451] WARNING django.server - "GET /api/auth/me/ HTTP/1.1" 401 156
+[2026-06-16 09:02:09,787] WARNING django.request - Unauthorized: /api/auth/me/
+[2026-06-16 09:02:09,788] WARNING django.server - "GET /api/auth/me/ HTTP/1.1" 401 156
+[2026-06-16 09:02:15,276] WARNING django.request - Unauthorized: /api/auth/me/
+[2026-06-16 09:02:15,277] WARNING django.server - "GET /api/auth/me/ HTTP/1.1" 401 156
+[2026-06-16 09:12:40,797] WARNING django.request - Unauthorized: /api/approvals/
+[2026-06-16 09:12:40,800] WARNING django.server - "GET /api/approvals/ HTTP/1.1" 401 156
+[2026-06-16 09:12:40,805] WARNING django.request - Unauthorized: /api/approvals/
+[2026-06-16 09:12:40,807] WARNING django.server - "GET /api/approvals/ HTTP/1.1" 401 156
+[2026-06-16 09:12:53,266] WARNING django.request - Unauthorized: /api/auth/login/
+[2026-06-16 09:12:53,267] WARNING django.server - "POST /api/auth/login/ HTTP/1.1" 401 166
+[2026-06-16 09:13:05,886] WARNING django.request - Unauthorized: /api/notifications/
+[2026-06-16 09:13:05,888] WARNING django.server - "GET /api/notifications/ HTTP/1.1" 401 156
+[2026-06-16 09:13:05,894] WARNING django.request - Unauthorized: /api/notifications/
+[2026-06-16 09:13:05,896] WARNING django.server - "GET /api/notifications/ HTTP/1.1" 401 156
+[2026-06-16 09:16:56,616] WARNING django.request - Unauthorized: /api/auth/login/
+[2026-06-16 09:16:57,338] WARNING django.request - Unauthorized: /api/warehouses/

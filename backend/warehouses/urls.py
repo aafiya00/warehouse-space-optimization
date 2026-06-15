@@ -1,6 +1,10 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
-from .views import WarehouseViewSet, ZoneViewSet, RackViewSet, BinViewSet, recommend_bin, utilization_report
+from .views import (
+    WarehouseViewSet, ZoneViewSet, RackViewSet, BinViewSet,
+    recommend_bin, utilization_report,
+    ai_bin_recommendation, reorder_predictions, demand_forecast,
+)
 from .dashboard_views import WarehouseUtilizationView, LowStockAlertView, DashboardSummaryView
 
 router = DefaultRouter()
@@ -15,4 +19,7 @@ urlpatterns = router.urls + [
     path('dashboard/low-stock/', LowStockAlertView.as_view(), name='dashboard-low-stock'),
     path('recommend-bin/', recommend_bin, name='recommend-bin'),
     path('utilization-report/', utilization_report, name='utilization-report'),
+    path('ai-recommend/', ai_bin_recommendation, name='ai-bin-recommendation'),
+    path('reorder-predictions/', reorder_predictions, name='reorder-predictions'),
+    path('demand-forecast/', demand_forecast, name='demand-forecast'),
 ]
