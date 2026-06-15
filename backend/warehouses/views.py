@@ -31,3 +31,71 @@ class BinViewSet(viewsets.ModelViewSet):
     serializer_class = BinSerializer
     permission_classes = [IsAdminOrManager]
     filterset_fields = ['rack']
+# ─── Space Optimization API ───────────────────────────────────────────────────
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+from warehouses.optimization import find_best_bin, get_warehouse_utilization_report
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def recommend_bin(request):
+    """
+    GET /api/warehouses/recommend-bin/?quantity=50&warehouse_id=1
+    Returns the best bin recommendation for a given quantity.
+    """
+    try:
+        quantity = int(request.query_params.get('quantity', 0))
+        warehouse_id = request.query_params.get('warehouse_id', None)
+        zone_id = request.query_params.get('zone_id', None)
+
+        if quantity <= 0:
+            return Response(
+                {'error': 'quantity must be a positive integer'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        result = find_best_bin(quantity, warehouse_id=warehouse_id, zone_id=zone_id)
+
+        if result is None:
+            return Response(
+                {'message': 'No suitable bin found for the given quantity.', 'recommended': None},
+                status=status.HTTP_200_OK
+            )
+
+        # Remove non-serializable bin object before returning
+        result['recommended'] = {k: v for k, v in result['recommended'].items() if k != 'bin'}
+        result['alternatives'] = [
+            {k: v for k, v in a.items() if k != 'bin'} for a in result['alternatives']
+        ]
+
+        return Response(result, status=status.HTTP_200_OK)
+
+    except ValueError:
+        return Response(
+            {'error': 'quantity must be a valid integer'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def utilization_report(request):
+    """
+    GET /api/warehouses/utilization-report/?warehouse_id=1
+    Returns space utilization report grouped by zone.
+    """
+    try:
+        warehouse_id = request.query_params.get('warehouse_id', None)
+        report = get_warehouse_utilization_report(warehouse_id=warehouse_id)
+        return Response(
+            {'report': report, 'total_zones': len(report)},
+            status=status.HTTP_200_OK
+        )
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -90,3 +90,35 @@ class ResetPasswordView(APIView):
         user.set_password(new_password)
         user.save()
         return Response({'message': 'Password reset successfully.'})
+from .models import AuditLog
+from .serializers import AuditLogSerializer
+from accounts.permissions import IsAdminOrManager
+
+
+class AuditLogListView(generics.ListAPIView):
+    """
+    GET /api/accounts/audit-logs/
+    Returns audit logs - Admin and Manager only.
+    """
+    serializer_class = AuditLogSerializer
+    permission_classes = [permissions.IsAuthenticated, IsAdminOrManager]
+
+    def get_queryset(self):
+        queryset = AuditLog.objects.all()
+
+        # Filter by user
+        user_id = self.request.query_params.get('user_id')
+        if user_id:
+            queryset = queryset.filter(user_id=user_id)
+
+        # Filter by action
+        action = self.request.query_params.get('action')
+        if action:
+            queryset = queryset.filter(action=action)
+
+        # Filter by model
+        model_name = self.request.query_params.get('model')
+        if model_name:
+            queryset = queryset.filter(model_name__icontains=model_name)
+
+        return queryset[:100]  # Return latest 100

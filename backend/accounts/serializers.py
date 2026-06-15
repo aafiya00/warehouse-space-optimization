@@ -24,3 +24,17 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+from .models import AuditLog
+
+
+class AuditLogSerializer(serializers.ModelSerializer):
+    user_username = serializers.CharField(source='user.username', read_only=True)
+
+    class Meta:
+        model = AuditLog
+        fields = [
+            'id', 'user', 'user_username', 'action',
+            'model_name', 'object_id', 'description',
+            'ip_address', 'timestamp'
+        ]
+        read_only_fields = fields

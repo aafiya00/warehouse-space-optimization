@@ -164,3 +164,67 @@ DEFAULT_FROM_EMAIL = 'noreply@warehousesystem.com'
 
 # Email backend (console for development - prints to terminal instead of sending)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# ─── LOGGING CONFIGURATION ────────────────────────────────────────────────────
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} {name} - {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'request_file': {
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'requests.log',
+            'formatter': 'verbose',
+        },
+        'audit_file': {
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'audit.log',
+            'formatter': 'verbose',
+        },
+        'error_file': {
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'errors.log',
+            'formatter': 'verbose',
+        },
+    },
+
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'error_file'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+        'django.request.custom': {
+            'handlers': ['console', 'request_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'audit': {
+            'handlers': ['console', 'audit_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
+# ─── MIDDLEWARE (add our custom middleware) ────────────────────────────────────
+
+MIDDLEWARE += [
+    'warehouse_core.middleware.RequestLoggingMiddleware',
+    'warehouse_core.middleware.AuditMiddleware',
+]

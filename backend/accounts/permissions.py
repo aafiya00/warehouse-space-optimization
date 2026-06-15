@@ -47,3 +47,13 @@ class CanManageInventory(BasePermission):
         if request.method in ['GET', 'HEAD', 'OPTIONS']:
             return True
         return request.user.role in ['admin', 'manager', 'staff']
+class IsAdminManagerOrStaffReadCreate(BasePermission):
+    """Admin and Manager full access, Staff can read and create, Viewer read only"""
+    def has_permission(self, request, view):
+        if not request.user.is_authenticated:
+            return False
+        if request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return True
+        if request.method == 'POST':
+            return request.user.role in ['admin', 'manager', 'staff']
+        return request.user.role in ['admin', 'manager']

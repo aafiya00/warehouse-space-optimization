@@ -1,0 +1,2 @@
+[2026-06-15 20:33:33,325] WARNING django.request - Unauthorized: /api/warehouses/
+[2026-06-15 20:33:33,328] WARNING django.server - "GET /api/warehouses/ HTTP/1.1" 401 5064
