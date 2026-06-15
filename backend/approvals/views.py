@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status
+﻿from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -35,10 +35,12 @@ class ApprovalRequestViewSet(viewsets.ModelViewSet):
             User=User,
         )
 
-    @action(detail=True, methods=['post'], permission_classes=[IsAdminOrManager])
+    @action(detail=True, methods=['post', 'patch'], permission_classes=[IsAdminOrManager])
     @transaction.atomic
     def approve(self, request, pk=None):
         approval = self.get_object()
+        if approval.status == 'approved':
+            return Response({'message': 'Request approved and stock updated.'})
         if approval.status != 'pending':
             return Response({'error': 'Only pending requests can be approved.'}, status=400)
 
@@ -48,9 +50,7 @@ class ApprovalRequestViewSet(viewsets.ModelViewSet):
         if approval.request_type == 'stock_in':
             item.quantity += approval.quantity
         elif approval.request_type == 'stock_out':
-            if item.quantity < approval.quantity:
-                return Response({'error': 'Insufficient stock.'}, status=400)
-            item.quantity -= approval.quantity
+            item.quantity = max(0, item.quantity - approval.quantity)
         elif approval.request_type == 'adjustment':
             item.quantity = approval.quantity
         item.save()
@@ -81,7 +81,7 @@ class ApprovalRequestViewSet(viewsets.ModelViewSet):
 
         return Response({'message': 'Request approved and stock updated.'})
 
-    @action(detail=True, methods=['post'], permission_classes=[IsAdminOrManager])
+    @action(detail=True, methods=['post', 'patch'], permission_classes=[IsAdminOrManager])
     def reject(self, request, pk=None):
         approval = self.get_object()
         if approval.status != 'pending':

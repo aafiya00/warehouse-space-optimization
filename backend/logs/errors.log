@@ -37,3 +37,31 @@
 [2026-06-16 09:13:05,896] WARNING django.server - "GET /api/notifications/ HTTP/1.1" 401 156
 [2026-06-16 09:16:56,616] WARNING django.request - Unauthorized: /api/auth/login/
 [2026-06-16 09:16:57,338] WARNING django.request - Unauthorized: /api/warehouses/
+[2026-06-16 09:49:32,399] WARNING django.request - Unauthorized: /api/warehouses/
+[2026-06-16 09:52:56,070] WARNING django.request - Unauthorized: /api/auth/login/
+[2026-06-16 09:52:58,999] WARNING django.request - Method Not Allowed: /api/warehouses/
+[2026-06-16 09:53:40,150] WARNING django.request - Method Not Allowed: /api/approvals/requests/
+[2026-06-16 09:53:47,442] WARNING django.request - Not Found: /api/approvals/requests/1/approve/
+[2026-06-16 09:53:52,929] WARNING django.request - Unauthorized: /api/warehouses/
+[2026-06-16 09:54:01,751] WARNING django.request - Method Not Allowed: /api/warehouses/
+[2026-06-16 09:58:05,189] WARNING django.request - Unauthorized: /api/auth/login/
+[2026-06-16 09:58:10,689] WARNING django.request - Method Not Allowed: /api/warehouses/zones/
+[2026-06-16 09:58:13,387] WARNING django.request - Method Not Allowed: /api/warehouses/racks/
+[2026-06-16 09:58:16,076] WARNING django.request - Method Not Allowed: /api/warehouses/bins/
+[2026-06-16 09:58:29,802] WARNING django.request - Bad Request: /api/approvals/requests/1/approve/
+[2026-06-16 09:58:31,806] WARNING django.request - Unauthorized: /api/warehouses/
+[2026-06-16 09:58:35,131] WARNING django.request - Forbidden: /api/warehouses/
+[2026-06-16 10:03:07,956] WARNING django.request - Unauthorized: /api/auth/login/
+[2026-06-16 10:03:14,815] WARNING django.request - Method Not Allowed: /api/warehouses/
+[2026-06-16 10:04:02,502] WARNING django.request - Bad Request: /api/approvals/requests/1/approve/
+[2026-06-16 10:04:04,465] WARNING django.request - Unauthorized: /api/warehouses/
+[2026-06-16 10:04:07,707] WARNING django.request - Method Not Allowed: /api/warehouses/
+[2026-06-16 10:06:37,104] WARNING django.request - Unauthorized: /api/auth/login/
+[2026-06-16 10:06:42,431] WARNING django.request - Method Not Allowed: /api/warehouses/zones/
+[2026-06-16 10:06:45,089] WARNING django.request - Method Not Allowed: /api/warehouses/racks/
+[2026-06-16 10:06:47,746] WARNING django.request - Method Not Allowed: /api/warehouses/bins/
+[2026-06-16 10:07:03,013] WARNING django.request - Unauthorized: /api/warehouses/
+[2026-06-16 10:07:06,318] WARNING django.request - Forbidden: /api/warehouses/
+[2026-06-16 10:09:48,672] WARNING django.request - Unauthorized: /api/auth/login/
+[2026-06-16 10:10:15,521] WARNING django.request - Unauthorized: /api/warehouses/
+[2026-06-16 10:10:18,781] WARNING django.request - Forbidden: /api/warehouses/
