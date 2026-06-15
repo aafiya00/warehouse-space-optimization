@@ -1,6 +1,6 @@
-from rest_framework import viewsets, permissions, status
-from rest_framework.response import Response
+from rest_framework import viewsets
 from django.db import transaction
+from accounts.permissions import IsAdminOrManager, IsAdminManagerOrStaffReadCreate
 from .models import Category, Product, InventoryItem, StockMovement
 from .serializers import (
     CategorySerializer, ProductSerializer,
@@ -11,13 +11,13 @@ from .serializers import (
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminOrManager]
 
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminOrManager]
     filterset_fields = ['category']
     search_fields = ['name', 'sku']
 
@@ -25,14 +25,14 @@ class ProductViewSet(viewsets.ModelViewSet):
 class InventoryItemViewSet(viewsets.ModelViewSet):
     queryset = InventoryItem.objects.all()
     serializer_class = InventoryItemSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminOrManager]
     filterset_fields = ['product', 'bin']
 
 
 class StockMovementViewSet(viewsets.ModelViewSet):
     queryset = StockMovement.objects.all().order_by('-timestamp')
     serializer_class = StockMovementSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminManagerOrStaffReadCreate]
     filterset_fields = ['product', 'bin', 'movement_type']
 
     @transaction.atomic
@@ -44,8 +44,6 @@ class StockMovementViewSet(viewsets.ModelViewSet):
         if movement.movement_type == 'in':
             item.quantity += movement.quantity
         elif movement.movement_type == 'out':
-            if item.quantity < movement.quantity:
-                raise ValueError("Insufficient stock for this movement.")
             item.quantity -= movement.quantity
         elif movement.movement_type == 'adjustment':
             item.quantity = movement.quantity

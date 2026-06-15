@@ -35,3 +35,22 @@ class StockMovementSerializer(serializers.ModelSerializer):
         fields = ['id', 'product', 'product_name', 'bin', 'movement_type', 'quantity',
                   'performed_by', 'performed_by_name', 'timestamp', 'note']
         read_only_fields = ['performed_by', 'timestamp']
+
+    def validate(self, data):
+        movement_type = data.get('movement_type')
+        quantity = data.get('quantity')
+
+        if quantity is None or quantity <= 0:
+            raise serializers.ValidationError({"quantity": "Quantity must be greater than zero."})
+
+        if movement_type == 'out':
+            product = data.get('product')
+            bin_ = data.get('bin')
+            item = InventoryItem.objects.filter(product=product, bin=bin_).first()
+            current_qty = item.quantity if item else 0
+            if quantity > current_qty:
+                raise serializers.ValidationError(
+                    {"quantity": f"Insufficient stock. Available: {current_qty}, requested: {quantity}."}
+                )
+
+        return data
