@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ER Diagram – Warehouse Space Optimization System</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #f0f4f8; margin: 0; padding: 20px; }
+  h1 { text-align: center; color: #1e3a5f; margin-bottom: 4px; }
+  p.subtitle { text-align: center; color: #555; margin-bottom: 30px; font-size: 14px; }
+  svg { display: block; margin: auto; background: white; border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+</style>
+</head>
+<body>
+<h1>Entity Relationship Diagram</h1>
+<p class="subtitle">Warehouse Space Optimization System — Database Schema</p>
+<svg viewBox="0 0 1100 820" width="1080" xmlns="http://www.w3.org/2000/svg" font-family="Arial" font-size="12">
+
+  <!-- ===== DEFS ===== -->
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#555"/>
+    </marker>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="120%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#00000022"/>
+    </filter>
+  </defs>
+
+  <!-- ===== COLOUR PALETTE ===== -->
+  <!-- User #3b82f6  Warehouse #10b981  Inventory #f59e0b  Approval #8b5cf6  Notification #ef4444  AuditLog #64748b -->
+
+  <!-- ════════════════════════════
+       TABLE: User  (col 1, row 1)
+  ════════════════════════════ -->
+  <g filter="url(#shadow)">
+    <rect x="30" y="30" width="200" height="195" rx="8" fill="white" stroke="#3b82f6" stroke-width="2"/>
+    <rect x="30" y="30" width="200" height="34" rx="8" fill="#3b82f6"/>
+    <rect x="30" y="56" width="200" height="8" fill="#3b82f6"/>
+    <text x="130" y="52" text-anchor="middle" fill="white" font-weight="bold" font-size="13">User</text>
+    <!-- PK -->
+    <text x="44" y="82"  fill="#1e3a5f">🔑 id (PK)</text>
+    <line x1="30" y1="89" x2="230" y2="89" stroke="#e5e7eb"/>
+    <text x="44" y="104" fill="#374151">username (unique)</text>
+    <text x="44" y="120" fill="#374151">email</text>
+    <text x="44" y="136" fill="#374151">password_hash</text>
+    <text x="44" y="152" fill="#374151">first_name</text>
+    <text x="44" y="168" fill="#374151">last_name</text>
+    <text x="44" y="184" fill="#374151">phone</text>
+    <text x="44" y="200" fill="#374151">role {admin|manager|staff|viewer}</text>
+    <text x="44" y="216" fill="#374151">is_active</text>
+  </g>
+
+  <!-- ════════════════════════════
+       TABLE: AuditLog  (col 1, row 2)
+  ════════════════════════════ -->
+  <g filter="url(#shadow)">
+    <rect x="30" y="290" width="200" height="195" rx="8" fill="white" stroke="#64748b" stroke-width="2"/>
+    <rect x="30" y="290" width="200" height="34" rx="8" fill="#64748b"/>
+    <rect x="30" y="316" width="200" height="8" fill="#64748b"/>
+    <text x="130" y="312" text-anchor="middle" fill="white" font-weight="bold" font-size="13">AuditLog</text>
+    <text x="44" y="340" fill="#1e3a5f">🔑 id (PK)</text>
+    <line x1="30" y1="347" x2="230" y2="347" stroke="#e5e7eb"/>
+    <text x="44" y="362" fill="#374151">🔗 user_id (FK → User)</text>
+    <text x="44" y="378" fill="#374151">action {CREATE|UPDATE…}</text>
+    <text x="44" y="394" fill="#374151">model_name</text>
+    <text x="44" y="410" fill="#374151">object_id</text>
+    <text x="44" y="426" fill="#374151">description</text>
+    <text x="44" y="442" fill="#374151">ip_address</text>
+    <text x="44" y="458" fill="#374151">timestamp</text>
+  </g>
+
+  <!-- ════════════════════════════
+       TABLE: Notification  (col 1, row 3)
+  ════════════════════════════ -->
+  <g filter="url(#shadow)">
+    <rect x="30" y="560" width="200" height="175" rx="8" fill="white" stroke="#ef4444" stroke-width="2"/>
+    <rect x="30" y="560" width="200" height="34" rx="8" fill="#ef4444"/>
+    <rect x="30" y="586" width="200" height="8" fill="#ef4444"/>
+    <text x="130" y="582" text-anchor="middle" fill="white" font-weight="bold" font-size="13">Notification</text>
+    <text x="44" y="610" fill="#1e3a5f">🔑 id (PK)</text>
+    <line x1="30" y1="617" x2="230" y2="617" stroke="#e5e7eb"/>
+    <text x="44" y="632" fill="#374151">🔗 user_id (FK → User)</text>
+    <text x="44" y="648" fill="#374151">notification_type</text>
+    <text x="44" y="664" fill="#374151">title</text>
+    <text x="44" y="680" fill="#374151">message</text>
+    <text x="44" y="696" fill="#374151">is_read</text>
+    <text x="44" y="712" fill="#374151">created_at</text>
+  </g>
+
+  <!-- ════════════════════════════
+       TABLE: Warehouse  (col 2)
+  ════════════════════════════ -->
+  <g filter="url(#shadow)">
+    <rect x="310" y="30" width="195" height="145" rx="8" fill="white" stroke="#10b981" stroke-width="2"/>
+    <rect x="310" y="30" width="195" height="34" rx="8" fill="#10b981"/>
+    <rect x="310" y="56" width="195" height="8" fill="#10b981"/>
+    <text x="407" y="52" text-anchor="middle" fill="white" font-weight="bold" font-size="13">Warehouse</text>
+    <text x="324" y="82" fill="#1e3a5f">🔑 id (PK)</text>
+    <line x1="310" y1="89" x2="505" y2="89" stroke="#e5e7eb"/>
+    <text x="324" y="104" fill="#374151">name</text>
+    <text x="324" y="120" fill="#374151">location</text>
+    <text x="324" y="136" fill="#374151">code (unique)</text>
+    <text x="324" y="152" fill="#374151">created_at</text>
+  </g>
+
+  <!-- ════════════════════════════
+       TABLE: Zone  (col 2, row 2)
+  ════════════════════════════ -->
+  <g filter="url(#shadow)">
+    <rect x="310" y="240" width="195" height="130" rx="8" fill="white" stroke="#10b981" stroke-width="2"/>
+    <rect x="310" y="240" width="195" height="34" rx="8" fill="#10b981"/>
+    <rect x="310" y="266" width="195" height="8" fill="#10b981"/>
+    <text x="407" y="262" text-anchor="middle" fill="white" font-weight="bold" font-size="13">Zone</text>
+    <text x="324" y="292" fill="#1e3a5f">🔑 id (PK)</text>
+    <line x1="310" y1="299" x2="505" y2="299" stroke="#e5e7eb"/>
+    <text x="324" y="314" fill="#374151">🔗 warehouse_id (FK → Warehouse)</text>
+    <text x="324" y="330" fill="#374151">name</text>
+    <text x="324" y="346" fill="#374151">code  [unique per warehouse]</text>
+  </g>
+
+  <!-- ════════════════════════════
+       TABLE: Rack  (col 2, row 3)
+  ════════════════════════════ -->
+  <g filter="url(#shadow)">
+    <rect x="310" y="440" width="195" height="130" rx="8" fill="white" stroke="#10b981" stroke-width="2"/>
+    <rect x="310" y="440" width="195" height="34" rx="8" fill="#10b981"/>
+    <rect x="310" y="466" width="195" height="8" fill="#10b981"/>
+    <text x="407" y="462" text-anchor="middle" fill="white" font-weight="bold" font-size="13">Rack</text>
+    <text x="324" y="492" fill="#1e3a5f">🔑 id (PK)</text>
+    <line x1="310" y1="499" x2="505" y2="499" stroke="#e5e7eb"/>
+    <text x="324" y="514" fill="#374151">🔗 zone_id (FK → Zone)</text>
+    <text x="324" y="530" fill="#374151">name</text>
+    <text x="324" y="546" fill="#374151">code  [unique per zone]</text>
+  </g>
+
+  <!-- ════════════════════════════
+       TABLE: Bin  (col 2, row 4)
+  ════════════════════════════ -->
+  <g filter="url(#shadow)">
+    <rect x="310" y="640" width="195" height="130" rx="8" fill="white" stroke="#10b981" stroke-width="2"/>
+    <rect x="310" y="640" width="195" height="34" rx="8" fill="#10b981"/>
+    <rect x="310" y="666" width="195" height="8" fill="#10b981"/>
+    <text x="407" y="662" text-anchor="middle" fill="white" font-weight="bold" font-size="13">Bin</text>
+    <text x="324" y="692" fill="#1e3a5f">🔑 id (PK)</text>
+    <line x1="310" y1="699" x2="505" y2="699" stroke="#e5e7eb"/>
+    <text x="324" y="714" fill="#374151">🔗 rack_id (FK → Rack)</text>
+    <text x="324" y="730" fill="#374151">code  [unique per rack]</text>
+    <text x="324" y="746" fill="#374151">capacity</text>
+  </g>
+
+  <!-- ════════════════════════════
+       TABLE: Category  (col 3, row 1)
+  ════════════════════════════ -->
+  <g filter="url(#shadow)">
+    <rect x="590" y="30" width="195" height="100" rx="8" fill="white" stroke="#f59e0b" stroke-width="2"/>
+    <rect x="590" y="30" width="195" height="34" rx="8" fill="#f59e0b"/>
+    <rect x="590" y="56" width="195" height="8" fill="#f59e0b"/>
+    <text x="687" y="52" text-anchor="middle" fill="white" font-weight="bold" font-size="13">Category</text>
+    <text x="604" y="82" fill="#1e3a5f">🔑 id (PK)</text>
+    <line x1="590" y1="89" x2="785" y2="89" stroke="#e5e7eb"/>
+    <text x="604" y="104" fill="#374151">name (unique)</text>
+  </g>
+
+  <!-- ════════════════════════════
+       TABLE: Product  (col 3, row 2)
+  ════════════════════════════ -->
+  <g filter="url(#shadow)">
+    <rect x="590" y="200" width="195" height="195" rx="8" fill="white" stroke="#f59e0b" stroke-width="2"/>
+    <rect x="590" y="200" width="195" height="34" rx="8" fill="#f59e0b"/>
+    <rect x="590" y="226" width="195" height="8" fill="#f59e0b"/>
+    <text x="687" y="222" text-anchor="middle" fill="white" font-weight="bold" font-size="13">Product</text>
+    <text x="604" y="252" fill="#1e3a5f">🔑 id (PK)</text>
+    <line x1="590" y1="259" x2="785" y2="259" stroke="#e5e7eb"/>
+    <text x="604" y="274" fill="#374151">name</text>
+    <text x="604" y="290" fill="#374151">sku (unique)</text>
+    <text x="604" y="306" fill="#374151">🔗 category_id (FK → Category)</text>
+    <text x="604" y="322" fill="#374151">description</text>
+    <text x="604" y="338" fill="#374151">unit_price</text>
+    <text x="604" y="354" fill="#374151">reorder_level</text>
+    <text x="604" y="370" fill="#374151">created_at</text>
+  </g>
+
+  <!-- ════════════════════════════
+       TABLE: InventoryItem  (col 3, row 3)
+  ════════════════════════════ -->
+  <g filter="url(#shadow)">
+    <rect x="590" y="470" width="195" height="130" rx="8" fill="white" stroke="#f59e0b" stroke-width="2"/>
+    <rect x="590" y="470" width="195" height="34" rx="8" fill="#f59e0b"/>
+    <rect x="590" y="496" width="195" height="8" fill="#f59e0b"/>
+    <text x="687" y="492" text-anchor="middle" fill="white" font-weight="bold" font-size="13">InventoryItem</text>
+    <text x="604" y="522" fill="#1e3a5f">🔑 id (PK)</text>
+    <line x1="590" y1="529" x2="785" y2="529" stroke="#e5e7eb"/>
+    <text x="604" y="544" fill="#374151">🔗 product_id (FK → Product)</text>
+    <text x="604" y="560" fill="#374151">🔗 bin_id (FK → Bin)</text>
+    <text x="604" y="576" fill="#374151">quantity</text>
+    <text x="604" y="592" fill="#374151">updated_at  [unique: product+bin]</text>
+  </g>
+
+  <!-- ════════════════════════════
+       TABLE: StockMovement  (col 3, row 4)
+  ════════════════════════════ -->
+  <g filter="url(#shadow)">
+    <rect x="590" y="660" width="195" height="145" rx="8" fill="white" stroke="#f59e0b" stroke-width="2"/>
+    <rect x="590" y="660" width="195" height="34" rx="8" fill="#f59e0b"/>
+    <rect x="590" y="686" width="195" height="8" fill="#f59e0b"/>
+    <text x="687" y="682" text-anchor="middle" fill="white" font-weight="bold" font-size="13">StockMovement</text>
+    <text x="604" y="712" fill="#1e3a5f">🔑 id (PK)</text>
+    <line x1="590" y1="719" x2="785" y2="719" stroke="#e5e7eb"/>
+    <text x="604" y="734" fill="#374151">🔗 product_id (FK → Product)</text>
+    <text x="604" y="750" fill="#374151">🔗 bin_id (FK → Bin)</text>
+    <text x="604" y="766" fill="#374151">🔗 performed_by (FK → User)</text>
+    <text x="604" y="782" fill="#374151">movement_type / quantity / note</text>
+    <text x="604" y="798" fill="#374151">timestamp</text>
+  </g>
+
+  <!-- ════════════════════════════
+       TABLE: ApprovalRequest  (col 4)
+  ════════════════════════════ -->
+  <g filter="url(#shadow)">
+    <rect x="870" y="30" width="210" height="245" rx="8" fill="white" stroke="#8b5cf6" stroke-width="2"/>
+    <rect x="870" y="30" width="210" height="34" rx="8" fill="#8b5cf6"/>
+    <rect x="870" y="56" width="210" height="8" fill="#8b5cf6"/>
+    <text x="975" y="52" text-anchor="middle" fill="white" font-weight="bold" font-size="13">ApprovalRequest</text>
+    <text x="884" y="82" fill="#1e3a5f">🔑 id (PK)</text>
+    <line x1="870" y1="89" x2="1080" y2="89" stroke="#e5e7eb"/>
+    <text x="884" y="104" fill="#374151">🔗 requested_by (FK → User)</text>
+    <text x="884" y="120" fill="#374151">🔗 reviewed_by (FK → User)</text>
+    <text x="884" y="136" fill="#374151">🔗 product_id (FK → Product)</text>
+    <text x="884" y="152" fill="#374151">🔗 bin_id (FK → Bin)</text>
+    <text x="884" y="168" fill="#374151">request_type</text>
+    <text x="884" y="184" fill="#374151">status {pending|approved|rejected}</text>
+    <text x="884" y="200" fill="#374151">quantity</text>
+    <text x="884" y="216" fill="#374151">note / rejection_reason</text>
+    <text x="884" y="232" fill="#374151">created_at / reviewed_at</text>
+  </g>
+
+  <!-- ═══════════ RELATIONSHIP ARROWS ═══════════ -->
+
+  <!-- User → AuditLog (1:N) -->
+  <line x1="130" y1="225" x2="130" y2="290" stroke="#64748b" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+  <text x="135" y="260" fill="#64748b" font-size="10">1 : N</text>
+
+  <!-- User → Notification (1:N) -->
+  <line x1="130" y1="485" x2="130" y2="560" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+  <text x="135" y="525" fill="#ef4444" font-size="10">1 : N</text>
+
+  <!-- User → ApprovalRequest requested_by (1:N) -->
+  <line x1="230" y1="90" x2="870" y2="105" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+
+  <!-- User → StockMovement performed_by (1:N) -->
+  <line x1="230" y1="130" x2="590" y2="765" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+
+  <!-- Warehouse → Zone (1:N) -->
+  <line x1="407" y1="175" x2="407" y2="240" stroke="#10b981" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="412" y="210" fill="#10b981" font-size="10">1 : N</text>
+
+  <!-- Zone → Rack (1:N) -->
+  <line x1="407" y1="370" x2="407" y2="440" stroke="#10b981" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="412" y="408" fill="#10b981" font-size="10">1 : N</text>
+
+  <!-- Rack → Bin (1:N) -->
+  <line x1="407" y1="570" x2="407" y2="640" stroke="#10b981" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="412" y="607" fill="#10b981" font-size="10">1 : N</text>
+
+  <!-- Category → Product (1:N) -->
+  <line x1="687" y1="130" x2="687" y2="200" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="692" y="168" fill="#f59e0b" font-size="10">1 : N</text>
+
+  <!-- Product → InventoryItem (1:N) -->
+  <line x1="687" y1="395" x2="687" y2="470" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="692" y="435" fill="#f59e0b" font-size="10">1 : N</text>
+
+  <!-- Bin → InventoryItem (1:N) -->
+  <line x1="505" y1="705" x2="590" y2="560" stroke="#10b981" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+
+  <!-- Product → StockMovement (1:N) -->
+  <line x1="785" y1="350" x2="785" y2="695" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+  <line x1="785" y1="695" x2="785" y2="740" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4,3"/>
+
+  <!-- Bin → StockMovement -->
+  <line x1="505" y1="730" x2="590" y2="750" stroke="#10b981" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+
+  <!-- Product → ApprovalRequest -->
+  <line x1="785" y1="280" x2="870" y2="138" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+
+  <!-- Bin → ApprovalRequest -->
+  <line x1="505" y1="685" x2="870" y2="154" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+
+  <!-- ═══════════ LEGEND ═══════════ -->
+  <rect x="30" y="760" width="260" height="50" rx="6" fill="white" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="44" y="778" fill="#374151" font-size="11" font-weight="bold">Legend</text>
+  <line x1="44" y1="790" x2="70" y2="790" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="76" y="794" fill="#374151" font-size="10">FK relationship (1:N)</text>
+  <line x1="44" y1="804" x2="70" y2="804" stroke="#555" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+  <text x="76" y="808" fill="#374151" font-size="10">Optional / nullable FK</text>
+  <text x="170" y="778" fill="#3b82f6" font-size="10">■ User/Auth</text>
+  <text x="170" y="792" fill="#10b981" font-size="10">■ Warehouse</text>
+  <text x="170" y="806" fill="#f59e0b" font-size="10">■ Inventory</text>
+  <text x="230" y="778" fill="#8b5cf6" font-size="10">■ Approvals</text>
+  <text x="230" y="792" fill="#ef4444" font-size="10">■ Notifications</text>
+  <text x="230" y="806" fill="#64748b" font-size="10">■ AuditLog</text>
+</svg>
+</body>
+</html>
