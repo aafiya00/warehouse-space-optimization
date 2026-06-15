@@ -1,0 +1,5 @@
+[2026-06-15 20:56:52,681] INFO audit - AUDIT | user=anonymous | method=POST | path=/api/accounts/login/ | status=404
+[2026-06-15 20:56:53,146] INFO audit - AUDIT | user=anonymous | method=POST | path=/api/accounts/login/ | status=404
+[2026-06-15 20:59:39,799] INFO audit - AUDIT | user=anonymous | method=POST | path=/api/auth/login/ | status=200
+[2026-06-15 20:59:40,721] INFO audit - AUDIT | user=anonymous | method=POST | path=/api/auth/login/ | status=401
+[2026-06-15 20:59:42,133] INFO audit - AUDIT | user=anonymous | method=POST | path=/api/auth/register/ | status=201

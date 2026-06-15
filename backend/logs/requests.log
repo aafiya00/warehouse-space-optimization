@@ -1,1 +1,8 @@
 [2026-06-15 20:33:33,312] INFO django.request.custom - [401] GET /api/warehouses/ | user=af | 135.7ms
+[2026-06-15 20:56:52,681] INFO django.request.custom - [404] POST /api/accounts/login/ | user=anonymous | 5.1ms
+[2026-06-15 20:56:53,147] INFO django.request.custom - [404] POST /api/accounts/login/ | user=anonymous | 0.48ms
+[2026-06-15 20:56:53,614] INFO django.request.custom - [404] GET /api/accounts/users/ | user=anonymous | 0.2ms
+[2026-06-15 20:59:39,799] INFO django.request.custom - [200] POST /api/auth/login/ | user=anonymous | 688.43ms
+[2026-06-15 20:59:40,722] INFO django.request.custom - [401] POST /api/auth/login/ | user=anonymous | 454.75ms
+[2026-06-15 20:59:41,173] INFO django.request.custom - [401] GET /api/warehouses/ | user=anonymous | 0.93ms
+[2026-06-15 20:59:42,133] INFO django.request.custom - [201] POST /api/auth/register/ | user=anonymous | 503.8ms

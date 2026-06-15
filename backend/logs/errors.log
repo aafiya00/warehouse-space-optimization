@@ -1,2 +1,7 @@
 [2026-06-15 20:33:33,325] WARNING django.request - Unauthorized: /api/warehouses/
 [2026-06-15 20:33:33,328] WARNING django.server - "GET /api/warehouses/ HTTP/1.1" 401 5064
+[2026-06-15 20:56:52,683] WARNING django.request - Not Found: /api/accounts/login/
+[2026-06-15 20:56:53,147] WARNING django.request - Not Found: /api/accounts/login/
+[2026-06-15 20:56:53,614] WARNING django.request - Not Found: /api/accounts/users/
+[2026-06-15 20:59:40,722] WARNING django.request - Unauthorized: /api/auth/login/
+[2026-06-15 20:59:41,175] WARNING django.request - Unauthorized: /api/warehouses/
