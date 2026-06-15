@@ -1,36 +1,49 @@
-from rest_framework import permissions
+from rest_framework.permissions import BasePermission
 
 
-class IsAdminOrManager(permissions.BasePermission):
-    """
-    Full access for admin and manager roles only.
-    Staff and viewers get no access to these resources.
-    """
+class IsAdmin(BasePermission):
+    """Full access - Admin only"""
     def has_permission(self, request, view):
-        if not request.user or not request.user.is_authenticated:
+        return request.user.is_authenticated and request.user.role == 'admin'
+
+
+class IsAdminOrManager(BasePermission):
+    """Admin and Manager access"""
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role in ['admin', 'manager']
+
+
+class IsAdminManagerOrStaff(BasePermission):
+    """Admin, Manager, and Staff access"""
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role in ['admin', 'manager', 'staff']
+
+
+class IsAuthenticatedReadOnly(BasePermission):
+    """All authenticated users can read; only admin/manager/staff can write"""
+    def has_permission(self, request, view):
+        if not request.user.is_authenticated:
             return False
+        if request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return True
+        return request.user.role in ['admin', 'manager', 'staff']
+
+
+class CanManageWarehouses(BasePermission):
+    """Admin full access, Manager can manage their warehouses, Staff/Viewer read only"""
+    def has_permission(self, request, view):
+        if not request.user.is_authenticated:
+            return False
+        if request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return True
         return request.user.role in ['admin', 'manager']
 
 
-class IsAdminManagerOrStaffReadCreate(permissions.BasePermission):
-    """
-    admin / manager : full CRUD
-    staff           : can view (GET) and create (POST), but not update/delete
-    viewer          : read-only (GET)
-    """
+class CanManageInventory(BasePermission):
+    """Admin and Staff can manage inventory, Viewer read only"""
     def has_permission(self, request, view):
-        if not request.user or not request.user.is_authenticated:
+        if not request.user.is_authenticated:
             return False
-
-        role = request.user.role
-
-        if role in ['admin', 'manager']:
+        if request.method in ['GET', 'HEAD', 'OPTIONS']:
             return True
-
-        if role == 'staff':
-            return request.method in permissions.SAFE_METHODS or request.method == 'POST'
-
-        if role == 'viewer':
-            return request.method in permissions.SAFE_METHODS
-
-        return False
+        return request.user.role in ['admin', 'manager', 'staff']

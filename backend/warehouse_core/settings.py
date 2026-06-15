@@ -158,3 +158,9 @@ SWAGGER_SETTINGS = {
     },
     'USE_SESSION_AUTH': False,
 }
+# Password reset
+FRONTEND_URL = 'http://localhost:5173'
+DEFAULT_FROM_EMAIL = 'noreply@warehousesystem.com'
+
+# Email backend (console for development - prints to terminal instead of sending)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
