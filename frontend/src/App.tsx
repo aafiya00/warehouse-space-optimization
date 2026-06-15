@@ -1,4 +1,6 @@
-﻿import type { ReactNode } from "react";
+﻿import AnalyticsDashboard from "./pages/AnalyticsDashboard";
+import UserProfile from "./pages/UserProfile";
+import type { ReactNode } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Layout from "./components/Layout";
@@ -51,6 +53,8 @@ export default function App() {
             <Route path="products" element={<Products />} />
             <Route path="inventory" element={<Inventory />} />
             <Route path="movements" element={<Movements />} />
+            <Route path="/analytics" element={<AnalyticsDashboard />} />
+<Route path="/profile" element={<UserProfile />} />
             <Route path="approvals" element={<Approvals />} />
             <Route path="notifications" element={<Notifications />} />
             <Route path="reports" element={<Reports />} />
