@@ -24,6 +24,8 @@ INSTALLED_APPS = [
     'accounts',
     'warehouses',
     'inventory',
+    'approvals',
+    'notifications'
 ]
 
 MIDDLEWARE = [

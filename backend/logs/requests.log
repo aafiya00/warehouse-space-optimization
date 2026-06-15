@@ -6,3 +6,6 @@
 [2026-06-15 20:59:40,722] INFO django.request.custom - [401] POST /api/auth/login/ | user=anonymous | 454.75ms
 [2026-06-15 20:59:41,173] INFO django.request.custom - [401] GET /api/warehouses/ | user=anonymous | 0.93ms
 [2026-06-15 20:59:42,133] INFO django.request.custom - [201] POST /api/auth/register/ | user=anonymous | 503.8ms
+[2026-06-15 21:25:00,312] INFO django.request.custom - [401] GET /api/approvals/ | user=af | 175.98ms
+[2026-06-15 21:25:08,862] INFO django.request.custom - [404] GET /api/ | user=af | 86.36ms
+[2026-06-15 21:30:24,454] INFO django.request.custom - [401] GET /api/notifications/ | user=af | 147.39ms
