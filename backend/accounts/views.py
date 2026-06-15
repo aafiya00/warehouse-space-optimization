@@ -1,13 +1,15 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import send_mail
 from django.conf import settings
-from .serializers import UserSerializer, RegisterSerializer
+from .serializers import UserSerializer, RegisterSerializer, AuditLogSerializer
+from .models import AuditLog, LoginHistory
 
 User = get_user_model()
 
@@ -25,6 +27,13 @@ class MeView(APIView):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
 
+    def patch(self, request):
+        serializer = UserSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ChangePasswordView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -37,12 +46,95 @@ class ChangePasswordView(APIView):
         if not user.check_password(old_password):
             return Response({'error': 'Current password is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not new_password or len(new_password) < 6:
-            return Response({'error': 'New password must be at least 6 characters.'}, status=status.HTTP_400_BAD_REQUEST)
+        if not new_password or len(new_password) < 8:
+            return Response({'error': 'New password must be at least 8 characters.'}, status=status.HTTP_400_BAD_REQUEST)
 
         user.set_password(new_password)
+        from django.utils import timezone
+        user.password_changed_at = timezone.now()
         user.save()
         return Response({'message': 'Password changed successfully.'})
+
+
+class SecureLoginView(TokenObtainPairView):
+    """JWT login with account lockout and login history tracking."""
+
+    def post(self, request, *args, **kwargs):
+        username = request.data.get('username', '')
+        try:
+            user = User.objects.get(username=username)
+            if user.is_locked():
+                return Response(
+                    {'error': 'Account is temporarily locked due to too many failed attempts. Try again later.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+        except User.DoesNotExist:
+            pass
+
+        response = super().post(request, *args, **kwargs)
+
+        ip = request.META.get('REMOTE_ADDR')
+        ua = request.META.get('HTTP_USER_AGENT', '')
+
+        if response.status_code == 200:
+            try:
+                user = User.objects.get(username=username)
+                user.reset_failed_login()
+                user.last_login_ip = ip
+                user.save()
+                LoginHistory.objects.create(user=user, ip_address=ip, user_agent=ua, success=True)
+                AuditLog.log(user=user, action='LOGIN', model_name='User', object_id=user.id,
+                             description='User logged in', ip_address=ip)
+            except User.DoesNotExist:
+                pass
+        else:
+            try:
+                user = User.objects.get(username=username)
+                user.record_failed_login()
+                LoginHistory.objects.create(user=user, ip_address=ip, user_agent=ua, success=False)
+            except User.DoesNotExist:
+                pass
+
+        return response
+
+
+class LoginHistoryView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        history = LoginHistory.objects.filter(user=request.user)[:50]
+        data = [
+            {
+                'id': h.id,
+                'ip_address': h.ip_address,
+                'success': h.success,
+                'timestamp': h.timestamp,
+                'user_agent': h.user_agent,
+            }
+            for h in history
+        ]
+        return Response(data)
+
+
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        if self.request.user.role in ('admin', 'manager'):
+            return User.objects.all()
+        return User.objects.filter(id=self.request.user.id)
+
+
+class AuditLogListView(generics.ListAPIView):
+    serializer_class = AuditLogSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        if self.request.user.role == 'admin':
+            return AuditLog.objects.all()
+        return AuditLog.objects.filter(user=self.request.user)
 
 
 class ForgotPasswordView(APIView):
@@ -60,65 +152,31 @@ class ForgotPasswordView(APIView):
                 message=f'Click the link to reset your password: {reset_link}',
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[email],
-                fail_silently=False,
             )
         except User.DoesNotExist:
-            pass  # Don't reveal if email exists
-        return Response({'message': 'If this email exists, a reset link has been sent.'})
+            pass
+        return Response({'message': 'If an account exists, a reset link has been sent.'})
 
 
 class ResetPasswordView(APIView):
     permission_classes = [permissions.AllowAny]
 
-    def post(self, request):
-        uid = request.data.get('uid')
-        token = request.data.get('token')
-        new_password = request.data.get('new_password')
-
+    def post(self, request, uidb64, token):
         try:
-            user_id = force_str(urlsafe_base64_decode(uid))
-            user = User.objects.get(pk=user_id)
-        except (User.DoesNotExist, ValueError, TypeError):
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except Exception:
             return Response({'error': 'Invalid reset link.'}, status=status.HTTP_400_BAD_REQUEST)
 
         if not default_token_generator.check_token(user, token):
-            return Response({'error': 'Reset link is invalid or has expired.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Reset link has expired.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not new_password or len(new_password) < 6:
-            return Response({'error': 'Password must be at least 6 characters.'}, status=status.HTTP_400_BAD_REQUEST)
+        new_password = request.data.get('new_password')
+        if not new_password or len(new_password) < 8:
+            return Response({'error': 'Password must be at least 8 characters.'}, status=status.HTTP_400_BAD_REQUEST)
 
         user.set_password(new_password)
+        from django.utils import timezone
+        user.password_changed_at = timezone.now()
         user.save()
         return Response({'message': 'Password reset successfully.'})
-from .models import AuditLog
-from .serializers import AuditLogSerializer
-from accounts.permissions import IsAdminOrManager
-
-
-class AuditLogListView(generics.ListAPIView):
-    """
-    GET /api/accounts/audit-logs/
-    Returns audit logs - Admin and Manager only.
-    """
-    serializer_class = AuditLogSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAdminOrManager]
-
-    def get_queryset(self):
-        queryset = AuditLog.objects.all()
-
-        # Filter by user
-        user_id = self.request.query_params.get('user_id')
-        if user_id:
-            queryset = queryset.filter(user_id=user_id)
-
-        # Filter by action
-        action = self.request.query_params.get('action')
-        if action:
-            queryset = queryset.filter(action=action)
-
-        # Filter by model
-        model_name = self.request.query_params.get('model')
-        if model_name:
-            queryset = queryset.filter(model_name__icontains=model_name)
-
-        return queryset[:100]  # Return latest 100

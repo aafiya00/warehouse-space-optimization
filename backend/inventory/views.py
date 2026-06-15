@@ -48,3 +48,30 @@ class StockMovementViewSet(viewsets.ModelViewSet):
         elif movement.movement_type == 'adjustment':
             item.quantity = movement.quantity
         item.save()
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.db.models import Sum, F
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def low_stock_list(request):
+    """
+    GET /api/v1/inventory/low-stock/
+    Returns products where total stock <= reorder_level
+    """
+    from .models import Product
+    results = []
+    for product in Product.objects.prefetch_related('inventory_items'):
+        total = sum(i.quantity for i in product.inventory_items.all())
+        if total <= product.reorder_level:
+            results.append({
+                'id': product.id,
+                'sku': product.sku,
+                'name': product.name,
+                'quantity': total,
+                'reorder_level': product.reorder_level,
+            })
+    return Response(results)
