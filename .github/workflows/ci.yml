@@ -46,9 +46,8 @@ jobs:
       - name: Run tests with coverage
         run: |
           pip install coverage
-          coverage run manage.py test --verbosity=2
+          coverage run manage.py test accounts inventory warehouses approvals notifications tests_security tests_validation --verbosity=2
           coverage report --min-percentage=60
-
   frontend:
     name: Frontend — Build + Lint
     runs-on: ubuntu-latest
