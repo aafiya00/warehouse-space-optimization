@@ -1,5 +1,6 @@
-from django.db import models
+﻿from django.db import models
 from django.conf import settings
+from django.utils import timezone
 from warehouses.models import Bin
 
 
@@ -15,10 +16,24 @@ class Supplier(models.Model):
     contact_email = models.EmailField(blank=True)
     contact_phone = models.CharField(max_length=20, blank=True)
     address = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['name']),
+        ]
 
     def __str__(self):
         return self.name
+
+
+class ProductManager(models.Manager):
+    def active(self):
+        return self.filter(is_deleted=False)
+
+    def deleted(self):
+        return self.filter(is_deleted=True)
 
 
 class Product(models.Model):
@@ -34,8 +49,31 @@ class Product(models.Model):
     expiry_tracking = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # Soft delete
+    is_deleted = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(null=True, blank=True)
+
+    objects = ProductManager()
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['sku']),
+            models.Index(fields=['name']),
+            models.Index(fields=['is_deleted']),
+        ]
+
     def __str__(self):
         return f"{self.name} ({self.sku})"
+
+    def soft_delete(self):
+        self.is_deleted = True
+        self.deleted_at = timezone.now()
+        self.save()
+
+    def restore(self):
+        self.is_deleted = False
+        self.deleted_at = None
+        self.save()
 
 
 class InventoryItem(models.Model):
@@ -58,6 +96,12 @@ class InventoryItem(models.Model):
 
     class Meta:
         unique_together = ('product', 'bin')
+        indexes = [
+            models.Index(fields=['product']),
+            models.Index(fields=['bin']),
+            models.Index(fields=['status']),
+            models.Index(fields=['expiry_date']),
+        ]
 
     @property
     def available_quantity(self):
@@ -84,6 +128,12 @@ class PurchaseOrder(models.Model):
     expected_delivery = models.DateField(null=True, blank=True)
     notes = models.TextField(blank=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['order_number']),
+        ]
+
     def __str__(self):
         return f"PO-{self.order_number} ({self.status})"
 
@@ -109,6 +159,7 @@ class StockMovement(models.Model):
         ('allocation', 'Product Allocation'),
         ('retrieval', 'Product Retrieval'),
     )
+
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='movements')
     bin = models.ForeignKey(Bin, on_delete=models.CASCADE, related_name='movements')
     movement_type = models.CharField(max_length=20, choices=MOVEMENT_TYPES)
@@ -117,6 +168,13 @@ class StockMovement(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     note = models.CharField(max_length=255, blank=True)
     reference_number = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['product']),
+            models.Index(fields=['movement_type']),
+            models.Index(fields=['timestamp']),
+        ]
 
     def __str__(self):
         return f"{self.movement_type} - {self.product.sku} - {self.quantity}"

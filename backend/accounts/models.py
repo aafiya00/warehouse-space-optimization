@@ -1,24 +1,42 @@
-from django.contrib.auth.models import AbstractUser
+﻿from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
+import uuid
 
 
 class User(AbstractUser):
     ROLE_CHOICES = (
         ('admin', 'Admin'),
         ('manager', 'Warehouse Manager'),
-        ('staff', 'Warehouse Staff'),
-        ('viewer', 'Viewer'),
-        ('supervisor', 'Supervisor'),
+        ('staff', 'Inventory Staff'),
+        ('auditor', 'Auditor'),
+        ('approver', 'Approver'),
     )
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='staff')
     phone = models.CharField(max_length=15, blank=True, null=True)
+
+    # Account lockout
     failed_login_attempts = models.PositiveIntegerField(default=0)
     locked_until = models.DateTimeField(null=True, blank=True)
     last_login_ip = models.GenericIPAddressField(null=True, blank=True)
     password_changed_at = models.DateTimeField(null=True, blank=True)
+
+    # MFA
     mfa_enabled = models.BooleanField(default=False)
     mfa_secret = models.CharField(max_length=32, blank=True, null=True)
+
+    # Email verification
+    email_verified = models.BooleanField(default=False)
+    email_verification_token = models.UUIDField(default=uuid.uuid4, editable=False)
+
+    # Refresh token tracking
+    refresh_token_hash = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['role']),
+            models.Index(fields=['email']),
+        ]
 
     def is_locked(self):
         if self.locked_until and self.locked_until > timezone.now():
@@ -36,6 +54,12 @@ class User(AbstractUser):
         self.locked_until = None
         self.save()
 
+    def is_read_only(self):
+        return self.role == 'auditor'
+
+    def can_approve(self):
+        return self.role in ('admin', 'approver')
+
     def __str__(self):
         return f"{self.username} ({self.role})"
 
@@ -49,6 +73,9 @@ class LoginHistory(models.Model):
 
     class Meta:
         ordering = ['-timestamp']
+        indexes = [
+            models.Index(fields=['user', 'timestamp']),
+        ]
 
     def __str__(self):
         status = "OK" if self.success else "FAIL"
@@ -65,14 +92,13 @@ class AuditLog(models.Model):
         ('STOCK_IN', 'Stock In'),
         ('STOCK_OUT', 'Stock Out'),
         ('TRANSFER', 'Transfer'),
+        ('APPROVE', 'Approve'),
+        ('REJECT', 'Reject'),
     )
 
     user = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='audit_logs'
+        User, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='audit_logs'
     )
     action = models.CharField(max_length=20, choices=ACTION_CHOICES)
     model_name = models.CharField(max_length=100)
@@ -83,6 +109,11 @@ class AuditLog(models.Model):
 
     class Meta:
         ordering = ['-timestamp']
+        indexes = [
+            models.Index(fields=['user', 'timestamp']),
+            models.Index(fields=['model_name']),
+            models.Index(fields=['action']),
+        ]
 
     def __str__(self):
         return f"[{self.timestamp}] {self.user} - {self.action} - {self.model_name}"

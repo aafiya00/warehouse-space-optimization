@@ -1,4 +1,4 @@
-from django.db import models
+﻿from django.db import models
 from django.conf import settings
 
 
@@ -6,9 +6,13 @@ class Notification(models.Model):
     NOTIFICATION_TYPES = (
         ('approval_approved', 'Request Approved'),
         ('approval_rejected', 'Request Rejected'),
+        ('approval_pending', 'Approval Pending'),
         ('low_stock', 'Low Stock Alert'),
+        ('bin_full', 'Bin Full Alert'),
         ('stock_in', 'Stock In'),
         ('stock_out', 'Stock Out'),
+        ('purchase_order_approved', 'Purchase Order Approved'),
+        ('inventory_mismatch', 'Inventory Mismatch'),
         ('general', 'General'),
     )
 
@@ -24,6 +28,10 @@ class Notification(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user', 'is_read']),
+            models.Index(fields=['created_at']),
+        ]
 
     def __str__(self):
         return f"{self.user.username} - {self.title} - {'Read' if self.is_read else 'Unread'}"
@@ -42,3 +50,9 @@ class Notification(models.Model):
         admins = User.objects.filter(role__in=['admin', 'manager'])
         for admin in admins:
             cls.notify(admin, notification_type, title, message)
+
+    @classmethod
+    def notify_roles(cls, notification_type, title, message, User, roles):
+        users = User.objects.filter(role__in=roles)
+        for user in users:
+            cls.notify(user, notification_type, title, message)
