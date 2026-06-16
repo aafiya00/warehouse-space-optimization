@@ -1,59 +1,80 @@
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
 class IsAdmin(BasePermission):
-    """Full access - Admin only"""
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == 'admin'
+        return bool(request.user and request.user.is_authenticated and request.user.role == "admin")
 
 
 class IsAdminOrManager(BasePermission):
-    """Admin and Manager access"""
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role in ['admin', 'manager']
+        return bool(
+            request.user and request.user.is_authenticated
+            and request.user.role in ("admin", "manager")
+        )
+
+
+class IsAdminManagerOrSupervisor(BasePermission):
+    def has_permission(self, request, view):
+        return bool(
+            request.user and request.user.is_authenticated
+            and request.user.role in ("admin", "manager", "supervisor")
+        )
+
+
+class CanApproveRequests(BasePermission):
+    """Managers and supervisors can approve/reject stock requests."""
+    def has_permission(self, request, view):
+        return bool(
+            request.user and request.user.is_authenticated
+            and request.user.role in ("admin", "manager", "supervisor")
+        )
 
 
 class IsAdminManagerOrStaff(BasePermission):
-    """Admin, Manager, and Staff access"""
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role in ['admin', 'manager', 'staff']
+        return bool(
+            request.user and request.user.is_authenticated
+            and request.user.role in ("admin", "manager", "supervisor", "staff")
+        )
+
+
+class IsAdminManagerOrStaffReadCreate(BasePermission):
+    """
+    Admin/manager/supervisor: full access.
+    Staff: read and create only (no update/delete).
+    Viewer: read only.
+    """
+    def has_permission(self, request, view):
+        if not (request.user and request.user.is_authenticated):
+            return False
+        if request.user.role in ("admin", "manager", "supervisor"):
+            return True
+        if request.user.role == "staff":
+            return request.method in SAFE_METHODS or request.method == "POST"
+        if request.user.role == "viewer":
+            return request.method in SAFE_METHODS
+        return False
 
 
 class IsAuthenticatedReadOnly(BasePermission):
-    """All authenticated users can read; only admin/manager/staff can write"""
     def has_permission(self, request, view):
-        if not request.user.is_authenticated:
+        if not (request.user and request.user.is_authenticated):
             return False
-        if request.method in ['GET', 'HEAD', 'OPTIONS']:
-            return True
-        return request.user.role in ['admin', 'manager', 'staff']
+        return request.method in SAFE_METHODS
 
 
 class CanManageWarehouses(BasePermission):
-    """Admin full access, Manager can manage their warehouses, Staff/Viewer read only"""
     def has_permission(self, request, view):
-        if not request.user.is_authenticated:
-            return False
-        if request.method in ['GET', 'HEAD', 'OPTIONS']:
-            return True
-        return request.user.role in ['admin', 'manager']
+        return bool(
+            request.user and request.user.is_authenticated
+            and request.user.role in ("admin", "manager", "supervisor")
+        )
 
 
 class CanManageInventory(BasePermission):
-    """Admin and Staff can manage inventory, Viewer read only"""
     def has_permission(self, request, view):
-        if not request.user.is_authenticated:
-            return False
-        if request.method in ['GET', 'HEAD', 'OPTIONS']:
-            return True
-        return request.user.role in ['admin', 'manager', 'staff']
-class IsAdminManagerOrStaffReadCreate(BasePermission):
-    """Admin and Manager full access, Staff can read and create, Viewer read only"""
-    def has_permission(self, request, view):
-        if not request.user.is_authenticated:
-            return False
-        if request.method in ['GET', 'HEAD', 'OPTIONS']:
-            return True
-        if request.method == 'POST':
-            return request.user.role in ['admin', 'manager', 'staff']
-        return request.user.role in ['admin', 'manager']
+        return bool(
+            request.user and request.user.is_authenticated
+            and request.user.role in ("admin", "manager", "supervisor", "staff")
+        )

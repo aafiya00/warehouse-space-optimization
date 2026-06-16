@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../api/client";
 
 interface Category { id: number; name: string; }
 interface Product { id: number; name: string; sku: string; category: number | null; description: string; unit_price: string; reorder_level: number; }
 
-const PRODUCT_API = "http://localhost:8000/api/inventory/products/";
-const CATEGORY_API = "http://localhost:8000/api/inventory/categories/";
+
+
 
 export default function Products() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -22,8 +22,8 @@ export default function Products() {
   const fetchAll = async () => {
     setLoading(true);
     const [p, c] = await Promise.all([
-      axios.get(PRODUCT_API, { headers }),
-      axios.get(CATEGORY_API, { headers }),
+      api.get("/api/inventory/products/", { headers }),
+      api.get("/api/inventory/categories/", { headers }),
     ]);
     setProducts(p.data.results ?? p.data);
     setCategories(c.data.results ?? c.data);
@@ -47,8 +47,8 @@ export default function Products() {
   const handleSubmit = async () => {
     const payload = { ...form, category: form.category || null, reorder_level: parseInt(form.reorder_level) };
     try {
-      if (editItem) await axios.put(`${PRODUCT_API}${editItem.id}/`, payload, { headers });
-      else await axios.post(PRODUCT_API, payload, { headers });
+      if (editItem) await api.put(`/api/inventory/products/${editItem.id}/`, payload, { headers });
+      else await api.post("/api/inventory/products/", payload, { headers });
       setShowForm(false);
       fetchAll();
     } catch { alert("Save failed. Check all fields."); }
@@ -56,7 +56,7 @@ export default function Products() {
 
   const handleDelete = async (id: number) => {
     if (!confirm("Delete this product?")) return;
-    await axios.delete(`${PRODUCT_API}${id}/`, { headers });
+    await api.delete(`/api/inventory/products/${id}/`, { headers });
     fetchAll();
   };
 
