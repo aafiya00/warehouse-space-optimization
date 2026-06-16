@@ -9,16 +9,18 @@ const navLinks = [
   { to: "/racks", label: "Racks", icon: "🗄️" },
   { to: "/bins", label: "Bins", icon: "📦" },
   { to: "/products", label: "Products", icon: "🏷️" },
+  { to: "/suppliers", label: "Suppliers", icon: "🚚" },
   { to: "/inventory", label: "Inventory", icon: "📋" },
   { to: "/movements", label: "Movements", icon: "🔄" },
   { to: "/approvals", label: "Approvals", icon: "✅" },
   { to: "/notifications", label: "Notifications", icon: "🔔" },
   { to: "/reports", label: "Reports", icon: "📊" },
+  { to: "/analytics", label: "Analytics", icon: "📈" },
   { to: "/ai", label: "AI Insights", icon: "🤖" },
 ];
 
 export default function Layout() {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -43,8 +45,18 @@ export default function Layout() {
             </Link>
           );
         })}
+        {user?.role === "admin" && (
+          <Link to="/users" onClick={() => setSidebarOpen(false)}
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${location.pathname === "/users" ? "bg-blue-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}>
+            <span>👥</span><span>User Management</span>
+          </Link>
+        )}
       </nav>
       <div className="px-3 py-4 border-t border-gray-100 space-y-1">
+        <Link to="/profile" onClick={() => setSidebarOpen(false)}
+          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100">
+          👤 My Profile
+        </Link>
         <Link to="/change-password" onClick={() => setSidebarOpen(false)}
           className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100">
           🔑 Change Password
@@ -59,20 +71,14 @@ export default function Layout() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Mobile overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 bg-black/40 z-40 md:hidden" onClick={() => setSidebarOpen(false)} />
       )}
-
-      {/* Sidebar - desktop always visible, mobile slide-in */}
       <aside className={`fixed md:static inset-y-0 left-0 z-50 w-56 bg-white border-r border-gray-200 flex flex-col shadow-sm transform transition-transform duration-200
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
         <SidebarContent />
       </aside>
-
-      {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Mobile top bar */}
         <div className="md:hidden flex items-center gap-3 px-4 py-3 bg-white border-b border-gray-200">
           <button onClick={() => setSidebarOpen(true)} className="text-gray-600 hover:text-blue-600 text-xl">☰</button>
           <span className="text-base font-bold text-blue-700">🏬 WarehouseOS</span>
