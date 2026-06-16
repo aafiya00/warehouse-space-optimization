@@ -89,3 +89,28 @@
 [2026-06-16 11:30:05,824] WARNING django.request - Unauthorized: /api/warehouses/
 [2026-06-16 11:30:14,656] WARNING django.request - Unauthorized: /api/approvals/requests/
 [2026-06-16 11:30:24,271] WARNING django.request - Unauthorized: /api/notifications/
+[2026-06-17 09:41:43,480] WARNING django.request - Unauthorized: /api/v1/auth/login/
+[2026-06-17 09:41:44,319] WARNING django.request - Unauthorized: /api/v1/auth/login/
+[2026-06-17 09:41:45,137] WARNING django.request - Unauthorized: /api/v1/auth/login/
+[2026-06-17 09:41:45,915] WARNING django.request - Unauthorized: /api/v1/auth/login/
+[2026-06-17 09:41:46,679] WARNING django.request - Unauthorized: /api/v1/auth/login/
+[2026-06-17 09:41:47,502] WARNING django.request - Unauthorized: /api/v1/auth/login/
+[2026-06-17 09:41:49,186] WARNING django.request - Unauthorized: /api/v1/auth/login/
+[2026-06-17 09:41:50,067] WARNING django.request - Unauthorized: /api/v1/inventory/items/
+[2026-06-17 09:41:52,124] WARNING django.request - Unauthorized: /api/v1/inventory/items/
+[2026-06-17 09:41:55,450] WARNING django.request - Unauthorized: /api/v1/inventory/items/
+[2026-06-17 09:42:03,376] WARNING django.request - Method Not Allowed: /api/v1/auth/users/
+[2026-06-17 09:42:07,172] WARNING django.request - Forbidden: /api/v1/warehouses/1/
+[2026-06-17 09:42:10,254] WARNING django.request - Unauthorized: /api/v1/inventory/items/
+[2026-06-17 09:42:14,595] WARNING django.request - Forbidden: /api/v1/inventory/products/
+[2026-06-17 09:42:17,137] WARNING django.request - Bad Request: /api/v1/inventory/items/
+[2026-06-17 09:42:18,693] WARNING django.request - Bad Request: /api/v1/inventory/items/
+[2026-06-17 09:42:20,357] WARNING django.request - Bad Request: /api/v1/inventory/products/
+[2026-06-17 09:42:22,041] WARNING django.request - Bad Request: /api/v1/inventory/products/
+[2026-06-17 09:42:23,544] WARNING django.request - Bad Request: /api/v1/inventory/products/
+[2026-06-17 09:42:25,678] WARNING django.request - Bad Request: /api/v1/inventory/products/
+[2026-06-17 09:42:29,965] WARNING django.request - Bad Request: /api/v1/inventory/movements/
+[2026-06-17 09:42:31,621] WARNING django.request - Bad Request: /api/v1/inventory/movements/
+[2026-06-17 09:42:34,622] WARNING django.request - Bad Request: /api/v1/warehouses/
+[2026-06-17 09:42:34,636] WARNING django.request - Bad Request: /api/v1/warehouses/
+[2026-06-17 09:42:38,723] WARNING django.request - Bad Request: /api/v1/warehouses/
