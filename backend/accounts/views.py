@@ -57,8 +57,6 @@ class ChangePasswordView(APIView):
 
 
 class SecureLoginView(TokenObtainPairView):
-    """JWT login with account lockout and login history tracking."""
-
     def post(self, request, *args, **kwargs):
         username = request.data.get('username', '')
         try:
@@ -83,8 +81,8 @@ class SecureLoginView(TokenObtainPairView):
                 user.last_login_ip = ip
                 user.save()
                 LoginHistory.objects.create(user=user, ip_address=ip, user_agent=ua, success=True)
-                AuditLog.log(user=user, action='LOGIN', model_name='User', object_id=user.id,
-                             description='User logged in', ip_address=ip)
+                AuditLog.log(user=user, action='LOGIN', model_name='User',
+                             object_id=user.id, ip_address=ip)
             except User.DoesNotExist:
                 pass
         else:
@@ -102,14 +100,14 @@ class LoginHistoryView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        history = LoginHistory.objects.filter(user=request.user)[:50]
+        history = LoginHistory.objects.filter(user=request.user)[:20]
         data = [
             {
                 'id': h.id,
                 'ip_address': h.ip_address,
+                'user_agent': h.user_agent,
                 'success': h.success,
                 'timestamp': h.timestamp,
-                'user_agent': h.user_agent,
             }
             for h in history
         ]
@@ -117,14 +115,56 @@ class LoginHistoryView(APIView):
 
 
 class UserListView(generics.ListAPIView):
-    queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        if self.request.user.role in ('admin', 'manager'):
-            return User.objects.all()
+        if self.request.user.role == 'admin':
+            return User.objects.all().order_by('username')
         return User.objects.filter(id=self.request.user.id)
+
+
+class UserDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+        if request.user.role != 'admin' and request.user.id != pk:
+            return Response({'error': 'Permission denied.'}, status=status.HTTP_403_FORBIDDEN)
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(UserSerializer(user).data)
+
+    def patch(self, request, pk):
+        if request.user.role != 'admin':
+            return Response({'error': 'Only admins can update user details.'}, status=status.HTTP_403_FORBIDDEN)
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        allowed_fields = {'role', 'is_active'}
+        data = {k: v for k, v in request.data.items() if k in allowed_fields}
+
+        if 'role' in data:
+            valid_roles = ['admin', 'manager', 'supervisor', 'staff', 'viewer']
+            if data['role'] not in valid_roles:
+                return Response({'error': f'Invalid role. Choose from: {valid_roles}'}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = UserSerializer(user, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            AuditLog.log(
+                user=request.user,
+                action='UPDATE',
+                model_name='User',
+                object_id=user.id,
+                description=f'Admin updated user {user.username}: {data}',
+                ip_address=request.META.get('REMOTE_ADDR'),
+            )
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AuditLogListView(generics.ListAPIView):
@@ -141,21 +181,22 @@ class ForgotPasswordView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        email = request.data.get('email')
+        email = request.data.get('email', '')
         try:
             user = User.objects.get(email=email)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
-            reset_link = f"{settings.FRONTEND_URL}/reset-password/{uid}/{token}/"
+            reset_link = f"{settings.FRONTEND_URL}/reset-password?uid={uid}&token={token}"
             send_mail(
                 subject='Password Reset Request',
                 message=f'Click the link to reset your password: {reset_link}',
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[email],
+                fail_silently=True,
             )
         except User.DoesNotExist:
             pass
-        return Response({'message': 'If an account exists, a reset link has been sent.'})
+        return Response({'message': 'If that email exists, a reset link has been sent.'})
 
 
 class ResetPasswordView(APIView):
@@ -169,14 +210,12 @@ class ResetPasswordView(APIView):
             return Response({'error': 'Invalid reset link.'}, status=status.HTTP_400_BAD_REQUEST)
 
         if not default_token_generator.check_token(user, token):
-            return Response({'error': 'Reset link has expired.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Reset link has expired or is invalid.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        new_password = request.data.get('new_password')
-        if not new_password or len(new_password) < 8:
+        new_password = request.data.get('new_password', '')
+        if len(new_password) < 8:
             return Response({'error': 'Password must be at least 8 characters.'}, status=status.HTTP_400_BAD_REQUEST)
 
         user.set_password(new_password)
-        from django.utils import timezone
-        user.password_changed_at = timezone.now()
         user.save()
         return Response({'message': 'Password reset successfully.'})

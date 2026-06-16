@@ -94,7 +94,7 @@ export default function AnalyticsDashboard() {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="zone" />
               <YAxis domain={[0, 100]} unit="%" />
-              <Tooltip formatter={(v: number) => `${v.toFixed(1)}%`} />
+              <Tooltip formatter={(v) => `${Number(v).toFixed(1)}%`} />
               <Legend />
               <Bar dataKey="percent" name="Utilization %" fill="#4f46e5" radius={[4, 4, 0, 0]} />
             </BarChart>
@@ -136,7 +136,7 @@ export default function AnalyticsDashboard() {
                   <Cell key={i} fill={COLORS[i % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(v: number) => `${v.toFixed(1)}%`} />
+              <Tooltip formatter={(v) => `${Number(v).toFixed(1)}%`} />
             </PieChart>
           </ResponsiveContainer>
         </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../api/client";
 
 interface Warehouse {
   id: number;
@@ -7,8 +7,6 @@ interface Warehouse {
   location: string;
   code: string;
 }
-
-const API = "http://localhost:8000/api/warehouses/warehouses/";
 
 export default function Warehouses() {
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
@@ -19,13 +17,11 @@ export default function Warehouses() {
   const [form, setForm] = useState({ name: "", location: "", code: "" });
   const [search, setSearch] = useState("");
 
-  const token = localStorage.getItem("access");
-  const headers = { Authorization: `Bearer ${token}` };
-
   const fetchData = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(API, { headers });
+      setError("");
+      const res = await api.get("/warehouses/");
       setWarehouses(res.data.results ?? res.data);
     } catch {
       setError("Failed to load warehouses.");
@@ -42,9 +38,9 @@ export default function Warehouses() {
   const handleSubmit = async () => {
     try {
       if (editItem) {
-        await axios.put(`${API}${editItem.id}/`, form, { headers });
+        await api.put(`/warehouses/${editItem.id}/`, form);
       } else {
-        await axios.post(API, form, { headers });
+        await api.post("/warehouses/", form);
       }
       setShowForm(false);
       fetchData();
@@ -55,7 +51,7 @@ export default function Warehouses() {
 
   const handleDelete = async (id: number) => {
     if (!confirm("Delete this warehouse?")) return;
-    await axios.delete(`${API}${id}/`, { headers });
+    await api.delete(`/warehouses/${id}/`);
     fetchData();
   };
 
@@ -74,7 +70,6 @@ export default function Warehouses() {
         </button>
       </div>
 
-      {/* Search */}
       <input
         type="text"
         placeholder="Search by name, code, or location..."
@@ -83,11 +78,13 @@ export default function Warehouses() {
         className="w-full mb-4 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
 
-      {loading && <p className="text-gray-500">Loading...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="text-red-500 mb-4">{error}</p>}
 
-      {/* Table */}
-      {!loading && (
+      {loading ? (
+        <div className="flex justify-center py-16">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
+        </div>
+      ) : (
         <div className="overflow-x-auto rounded-xl shadow">
           <table className="w-full text-sm bg-white">
             <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
@@ -118,7 +115,6 @@ export default function Warehouses() {
         </div>
       )}
 
-      {/* Modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">

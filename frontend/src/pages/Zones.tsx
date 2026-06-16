@@ -4,7 +4,6 @@ import api from "../api/client";
 interface Zone {
   id: number;
   warehouse: number;
-  warehouse_name?: string;
   name: string;
   code: string;
 }
@@ -28,9 +27,10 @@ export default function Zones() {
   const fetchData = async () => {
     try {
       setLoading(true);
+      setError("");
       const [zRes, wRes] = await Promise.all([
         api.get("/warehouses/zones/"),
-        api.get("/warehouses/warehouses/"),
+        api.get("/warehouses/"),
       ]);
       setZones(zRes.data.results ?? zRes.data);
       setWarehouses(wRes.data.results ?? wRes.data);
@@ -87,10 +87,13 @@ export default function Zones() {
         className="w-full mb-4 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
 
-      {loading && <p className="text-gray-500">Loading...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="text-red-500 mb-4">{error}</p>}
 
-      {!loading && (
+      {loading ? (
+        <div className="flex justify-center py-16">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
+        </div>
+      ) : (
         <div className="overflow-x-auto rounded-xl shadow">
           <table className="w-full text-sm bg-white">
             <thead className="bg-gray-100 text-gray-600 uppercase text-xs">

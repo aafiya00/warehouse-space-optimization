@@ -19,14 +19,23 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('accounts.urls')),
     path('api/warehouses/', include('warehouses.urls')),
+    path('api/inventory/', include('inventory.urls')),
+    path('api/approvals/', include('approvals.urls')),
+    path('api/notifications/', include('notifications.urls')),
+
+    # Reports (export)
     path('api/v1/reports/inventory/csv/', warehouse_report_views.export_inventory_csv),
     path('api/v1/reports/inventory/excel/', warehouse_report_views.export_inventory_excel),
     path('api/v1/reports/movements/csv/', warehouse_report_views.export_movements_csv),
     path('api/v1/reports/utilization/', warehouse_report_views.warehouse_utilization_report),
     path('api/v1/reports/movement-trends/', warehouse_report_views.movement_trends),
-    path('api/inventory/', include('inventory.urls')),
+
+    # Analytics Dashboard endpoints (what AnalyticsDashboard.tsx calls)
+    path('api/v1/warehouses/utilization/', warehouse_report_views.warehouse_utilization_report),
+    path('api/v1/inventory/movement-trends/', warehouse_report_views.movement_trends),
+    path('api/v1/inventory/low-stock/', warehouse_report_views.low_stock_analytics),
+
+    # API Docs
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-    path('api/approvals/', include('approvals.urls')),
-    path('api/notifications/', include('notifications.urls')),
 ]

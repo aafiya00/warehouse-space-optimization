@@ -1,5 +1,11 @@
 from rest_framework import serializers
-from .models import Category, Product, InventoryItem, StockMovement
+from .models import Category, Product, InventoryItem, StockMovement, Supplier
+
+
+class SupplierSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Supplier
+        fields = ['id', 'name', 'contact_email', 'contact_phone', 'address', 'created_at']
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -10,11 +16,12 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
+    supplier_name = serializers.CharField(source='supplier.name', read_only=True)
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'sku', 'category', 'category_name', 'description',
-                  'unit_price', 'reorder_level', 'created_at']
+        fields = ['id', 'name', 'sku', 'category', 'category_name', 'supplier',
+                  'supplier_name', 'description', 'unit_price', 'reorder_level', 'created_at']
 
 
 class InventoryItemSerializer(serializers.ModelSerializer):

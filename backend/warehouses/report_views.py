@@ -169,6 +169,7 @@ def movement_trends(request):
     daily = defaultdict(lambda: {'in': 0, 'out': 0})
     for m in StockMovement.objects.filter(timestamp__gte=since):
         date_key = m.timestamp.strftime('%m/%d')
+
         if m.movement_type in ('in', 'receiving'):
             daily[date_key]['in'] += m.quantity
         elif m.movement_type in ('out', 'retrieval'):
@@ -176,3 +177,22 @@ def movement_trends(request):
 
     trends = [{'date': k, 'in': v['in'], 'out': v['out']} for k, v in sorted(daily.items())]
     return Response({'trends': trends})
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def low_stock_analytics(request):
+    """GET /api/v1/inventory/low-stock/  — for Analytics Dashboard"""
+    from rest_framework.response import Response
+    from django.db.models import Sum
+    results = []
+    for product in Product.objects.all():
+        total_qty = InventoryItem.objects.filter(product=product).aggregate(
+            total=Sum('quantity'))['total'] or 0
+        if total_qty <= product.reorder_level:
+            results.append({
+                'sku': product.sku,
+                'name': product.name,
+                'quantity': total_qty,
+                'reorder_level': product.reorder_level,
+            })
+    return Response(results)

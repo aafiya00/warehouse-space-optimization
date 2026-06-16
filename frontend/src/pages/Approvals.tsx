@@ -6,10 +6,19 @@ interface Approval {
   request_type: string;
   status: string;
   requested_by: number;
-  notes: string;
+  product: number;
+  product_name?: string;
+  bin: number;
+  bin_code?: string;
+  quantity: number;
+  note: string;
   created_at: string;
   reviewed_at: string | null;
+  rejection_reason?: string;
 }
+
+interface Product { id: number; name: string; sku: string; }
+interface Bin { id: number; code: string; }
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-700",
@@ -17,18 +26,23 @@ const STATUS_COLORS: Record<string, string> = {
   rejected: "bg-red-100 text-red-600",
 };
 
+const emptyForm = { request_type: "stock_in", product: "", bin: "", quantity: "1", note: "" };
+
 export default function Approvals() {
   const [approvals, setApprovals] = useState<Approval[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [bins, setBins] = useState<Bin[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ request_type: "stock_request", notes: "" });
+  const [form, setForm] = useState(emptyForm);
   const [filter, setFilter] = useState("all");
+  const [saving, setSaving] = useState(false);
 
   const fetchApprovals = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/approvals/");
+      const res = await api.get("/approvals/requests/");
       setApprovals(res.data.results ?? res.data);
     } catch {
       setError("Failed to load approvals.");
@@ -37,20 +51,48 @@ export default function Approvals() {
     }
   };
 
-  useEffect(() => { fetchApprovals(); }, []);
+  const fetchDropdowns = async () => {
+    try {
+      const [p, b] = await Promise.all([
+        api.get("/inventory/products/"),
+        api.get("/warehouses/bins/"),
+      ]);
+      setProducts(p.data.results ?? p.data);
+      setBins(b.data.results ?? b.data);
+    } catch {
+      // dropdowns optional
+    }
+  };
+
+  useEffect(() => { fetchApprovals(); fetchDropdowns(); }, []);
+
+  const openForm = () => { setForm(emptyForm); setError(""); setShowForm(true); };
 
   const handleSubmit = async () => {
+    if (!form.product || !form.bin || !form.quantity) {
+      setError("Product, Bin and Quantity are required."); return;
+    }
+    setSaving(true);
     try {
-      await api.post("/approvals/", form);
+      await api.post("/approvals/requests/", {
+        request_type: form.request_type,
+        product: Number(form.product),
+        bin: Number(form.bin),
+        quantity: Number(form.quantity),
+        note: form.note,
+      });
       setShowForm(false);
-      setForm({ request_type: "stock_request", notes: "" });
       fetchApprovals();
-    } catch { alert("Failed to submit request."); }
+    } catch {
+      setError("Failed to submit request. Check all fields.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleAction = async (id: number, action: "approve" | "reject") => {
     try {
-      await api.post(`/approvals/${id}/${action}/`);
+      await api.post(`/approvals/requests/${id}/${action}/`);
       fetchApprovals();
     } catch { alert(`Failed to ${action} request.`); }
   };
@@ -64,13 +106,12 @@ export default function Approvals() {
           <h1 className="text-2xl font-bold text-gray-800">Approvals</h1>
           <p className="text-sm text-gray-500 mt-1">Manage stock requests and transfer approvals</p>
         </div>
-        <button onClick={() => setShowForm(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+        <button onClick={openForm}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium">
           + New Request
         </button>
       </div>
 
-      {/* Filter Tabs */}
       <div className="flex gap-2 mb-6">
         {["all", "pending", "approved", "rejected"].map(s => (
           <button key={s} onClick={() => setFilter(s)}
@@ -81,7 +122,12 @@ export default function Approvals() {
       </div>
 
       {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-      {loading ? <p className="text-gray-400">Loading...</p> : (
+
+      {loading ? (
+        <div className="flex justify-center py-16">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
+        </div>
+      ) : (
         <div className="space-y-3">
           {filtered.length === 0 && (
             <div className="text-center py-12 text-gray-400 bg-white rounded-xl shadow">
@@ -93,14 +139,22 @@ export default function Approvals() {
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
                   <span className="font-semibold text-gray-800 capitalize">
-                    {a.request_type.replace("_", " ")}
+                    {a.request_type.replace(/_/g, " ")}
                   </span>
                   <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${STATUS_COLORS[a.status] ?? "bg-gray-100 text-gray-600"}`}>
                     {a.status.toUpperCase()}
                   </span>
                 </div>
-                {a.notes && <p className="text-sm text-gray-500 mb-2">{a.notes}</p>}
-                <p className="text-xs text-gray-400">
+                <p className="text-sm text-gray-600 mb-1">
+                  <span className="font-medium">Product:</span> {a.product_name ?? `#${a.product}`} &nbsp;|&nbsp;
+                  <span className="font-medium">Bin:</span> {a.bin_code ?? `#${a.bin}`} &nbsp;|&nbsp;
+                  <span className="font-medium">Qty:</span> {a.quantity}
+                </p>
+                {a.note && <p className="text-sm text-gray-500 mb-1">{a.note}</p>}
+                {a.rejection_reason && (
+                  <p className="text-sm text-red-500">Reason: {a.rejection_reason}</p>
+                )}
+                <p className="text-xs text-gray-400 mt-1">
                   Submitted: {new Date(a.created_at).toLocaleString()}
                   {a.reviewed_at && ` · Reviewed: ${new Date(a.reviewed_at).toLocaleString()}`}
                 </p>
@@ -122,34 +176,74 @@ export default function Approvals() {
         </div>
       )}
 
-      {/* Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
-            <h2 className="text-lg font-semibold mb-4">New Approval Request</h2>
-            <div className="mb-4">
-              <label className="block text-sm text-gray-600 mb-1">Request Type</label>
-              <select value={form.request_type}
-                onChange={e => setForm({ ...form, request_type: e.target.value })}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="stock_request">Stock Request</option>
-                <option value="transfer">Transfer</option>
-                <option value="adjustment">Adjustment</option>
-                <option value="disposal">Disposal</option>
-              </select>
+            <h2 className="text-lg font-semibold mb-4 text-gray-800">New Approval Request</h2>
+            {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Request Type</label>
+                <select value={form.request_type}
+                  onChange={e => setForm({ ...form, request_type: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="stock_in">Stock In</option>
+                  <option value="stock_out">Stock Out</option>
+                  <option value="transfer">Transfer</option>
+                  <option value="adjustment">Adjustment</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Product *</label>
+                <select value={form.product}
+                  onChange={e => setForm({ ...form, product: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="">Select product...</option>
+                  {products.map(p => (
+                    <option key={p.id} value={p.id}>{p.name} ({p.sku})</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Bin *</label>
+                <select value={form.bin}
+                  onChange={e => setForm({ ...form, bin: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="">Select bin...</option>
+                  {bins.map(b => (
+                    <option key={b.id} value={b.id}>{b.code}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Quantity *</label>
+                <input type="number" min="1" value={form.quantity}
+                  onChange={e => setForm({ ...form, quantity: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Note</label>
+                <textarea value={form.note}
+                  onChange={e => setForm({ ...form, note: e.target.value })}
+                  rows={2} placeholder="Optional note..."
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
+              </div>
             </div>
-            <div className="mb-4">
-              <label className="block text-sm text-gray-600 mb-1">Notes</label>
-              <textarea value={form.notes}
-                onChange={e => setForm({ ...form, notes: e.target.value })}
-                rows={3} placeholder="Describe your request..."
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
-            </div>
-            <div className="flex gap-3">
-              <button onClick={handleSubmit}
-                className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">Submit</button>
+
+            <div className="flex gap-3 mt-5">
+              <button onClick={handleSubmit} disabled={saving}
+                className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 text-sm font-medium disabled:opacity-50">
+                {saving ? "Submitting..." : "Submit Request"}
+              </button>
               <button onClick={() => setShowForm(false)}
-                className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200">Cancel</button>
+                className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 text-sm">
+                Cancel
+              </button>
             </div>
           </div>
         </div>
