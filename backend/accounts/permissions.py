@@ -11,22 +11,28 @@ class IsAdminOrManager(BasePermission):
         return request.user.is_authenticated and request.user.role in ('admin', 'manager')
 
 
+class IsAdminManagerOrSupervisor(BasePermission):
+    """Admin, Manager, or Supervisor can perform management actions."""
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role in ('admin', 'manager', 'supervisor')
+
+
 class IsInventoryStaff(BasePermission):
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role in ('admin', 'manager', 'staff')
+        return request.user.is_authenticated and request.user.role in ('admin', 'manager', 'staff', 'supervisor')
 
 
 class IsAdminManagerOrStaff(BasePermission):
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role in ('admin', 'manager', 'staff')
+        return request.user.is_authenticated and request.user.role in ('admin', 'manager', 'staff', 'supervisor')
 
 
 class IsAdminManagerOrStaffReadCreate(BasePermission):
-    """Admin/Manager full access. Staff can read and create only."""
+    """Admin/Manager/Supervisor full access. Staff can read and create only."""
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
             return False
-        if request.user.role in ('admin', 'manager'):
+        if request.user.role in ('admin', 'manager', 'supervisor'):
             return True
         if request.user.role == 'staff':
             return request.method in ('GET', 'POST', 'HEAD', 'OPTIONS')
@@ -36,13 +42,13 @@ class IsAdminManagerOrStaffReadCreate(BasePermission):
 
 
 class CanApproveRequests(BasePermission):
-    """Only admin and approver roles can approve/reject."""
+    """Admin, Manager, and Supervisor can approve/reject requests."""
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
             return False
         if request.method in SAFE_METHODS:
-            return request.user.role in ('admin', 'manager', 'staff', 'approver', 'auditor')
-        return request.user.role in ('admin', 'approver')
+            return request.user.role in ('admin', 'manager', 'supervisor', 'staff', 'approver', 'auditor')
+        return request.user.role in ('admin', 'manager', 'supervisor', 'approver')
 
 
 class IsAuditor(BasePermission):
@@ -52,12 +58,12 @@ class IsAuditor(BasePermission):
             return False
         if request.user.role == 'auditor':
             return request.method in SAFE_METHODS
-        return request.user.role in ('admin', 'manager', 'staff', 'approver')
+        return request.user.role in ('admin', 'manager', 'supervisor', 'staff', 'approver')
 
 
 class IsApprover(BasePermission):
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role in ('admin', 'approver')
+        return request.user.is_authenticated and request.user.role in ('admin', 'approver', 'manager', 'supervisor')
 
 
 class IsAdminOrReadOnly(BasePermission):

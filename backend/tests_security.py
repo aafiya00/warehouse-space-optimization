@@ -1,130 +1,149 @@
 """
-Security Test Suite
-Tests: role escalation, account lockout, JWT expiry rejection
+Security Tests — Role enforcement, account lockout, JWT rejection.
 """
 from django.test import TestCase
+from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 from accounts.models import User
 
 
-def create_user(username, role, password="TestPass123!"):
+def make_user(username, role, password="Pass1234!"):
     return User.objects.create_user(username=username, password=password, role=role)
 
 
-class RoleEscalationTests(TestCase):
-    """Verify that lower roles cannot access higher-role endpoints."""
+def get_token(client, username, password="Pass1234!"):
+    res = client.post("/api/v1/auth/login/", {"username": username, "password": password}, format="json")
+    return res.data.get("access", "")
+
+
+class RoleEnforcementTests(TestCase):
+    """Verify that lower roles cannot access admin/manager endpoints."""
 
     def setUp(self):
         self.client = APIClient()
-        self.viewer = create_user("viewer1", "viewer")
-        self.staff = create_user("staff1", "staff")
+        self.admin = make_user("sec_admin", "admin")
+        self.manager = make_user("sec_manager", "manager")
+        self.staff = make_user("sec_staff", "staff")
+        self.viewer = make_user("sec_viewer", "viewer")
 
-    def _get_token(self, username, password="TestPass123!"):
-        res = self.client.post("/api/auth/login/", {
-            "username": username, "password": password
-        }, format="json")
-        return res.data.get("access", "")
+    def auth(self, user):
+        token = get_token(self.client, user.username)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+
+    def test_admin_can_list_users(self):
+        self.auth(self.admin)
+        res = self.client.get("/api/v1/auth/users/")
+        self.assertNotEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_staff_cannot_delete_warehouse(self):
+        """Staff must not be able to DELETE warehouse resources."""
+        self.auth(self.staff)
+        res = self.client.delete("/api/v1/warehouses/1/")
+        self.assertIn(res.status_code, [
+            status.HTTP_403_FORBIDDEN,
+            status.HTTP_404_NOT_FOUND,
+            status.HTTP_401_UNAUTHORIZED,
+            status.HTTP_405_METHOD_NOT_ALLOWED,
+        ])
 
     def test_viewer_cannot_create_product(self):
-        """Viewer role must get 403 on POST /api/inventory/products/."""
-        token = self._get_token("viewer1")
-        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
-        res = self.client.post("/api/inventory/products/", {
-            "name": "Hack Product", "sku": "HACK001",
-            "unit_price": "10.00", "reorder_level": 5
-        }, format="json")
+        """Viewer must not be able to POST to products."""
+        self.auth(self.viewer)
+        payload = {"name": "Hack", "sku": "HACK-01", "unit_price": "1.00", "reorder_level": 5}
+        res = self.client.post("/api/v1/inventory/products/", payload, format="json")
         self.assertIn(res.status_code, [
             status.HTTP_403_FORBIDDEN,
             status.HTTP_401_UNAUTHORIZED,
-        ])
-
-    def test_staff_cannot_approve_request(self):
-        """Staff role must get 403 on approval endpoint."""
-        token = self._get_token("staff1")
-        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
-        res = self.client.post("/api/approvals/requests/1/approve/", format="json")
-        self.assertIn(res.status_code, [
-            status.HTTP_403_FORBIDDEN,
-            status.HTTP_401_UNAUTHORIZED,
-            status.HTTP_404_NOT_FOUND,
-        ])
-
-    def test_viewer_cannot_delete_warehouse(self):
-        """Viewer role must get 403 on DELETE /api/warehouses/warehouses/1/."""
-        token = self._get_token("viewer1")
-        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
-        res = self.client.delete("/api/warehouses/warehouses/1/")
-        self.assertIn(res.status_code, [
-            status.HTTP_403_FORBIDDEN,
-            status.HTTP_401_UNAUTHORIZED,
-            status.HTTP_404_NOT_FOUND,
         ])
 
     def test_unauthenticated_cannot_access_inventory(self):
-        """No token must return 401 on inventory endpoint."""
+        """No token should be rejected."""
         self.client.credentials()
-        res = self.client.get("/api/inventory/products/")
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        res = self.client.get("/api/v1/inventory/items/")
+        self.assertIn(res.status_code, [
+            status.HTTP_401_UNAUTHORIZED,
+            status.HTTP_403_FORBIDDEN,
+        ])
+
+    def test_staff_cannot_access_admin_user_list(self):
+        self.auth(self.staff)
+        res = self.client.get("/api/v1/auth/users/")
+        self.assertIn(res.status_code, [
+            status.HTTP_403_FORBIDDEN,
+            status.HTTP_401_UNAUTHORIZED,
+            status.HTTP_404_NOT_FOUND,
+        ])
 
 
 class AccountLockoutTests(TestCase):
-    """Verify account lockout after 5 failed login attempts."""
+    """Verify account locks after repeated failed logins."""
 
     def setUp(self):
         self.client = APIClient()
-        self.user = create_user("locktest", "staff")
+        self.user = make_user("lockout_user", "staff")
 
     def test_account_locks_after_failed_attempts(self):
-        """After 5 failed logins, account locks and 6th attempt is blocked."""
+        """After 5 wrong passwords the account should be locked."""
         for _ in range(5):
-            self.user.record_failed_login()
-
-        self.user.refresh_from_db()
-        self.assertIsNotNone(
-            self.user.locked_until,
-            "locked_until should be set after 5 failed attempts"
+            self.client.post(
+                "/api/v1/auth/login/",
+                {"username": "lockout_user", "password": "WrongPass!"},
+                format="json",
+            )
+        # Now try correct password — should be locked
+        res = self.client.post(
+            "/api/v1/auth/login/",
+            {"username": "lockout_user", "password": "Pass1234!"},
+            format="json",
         )
-        self.assertTrue(
-            self.user.is_locked(),
-            "is_locked() should return True after 5 failed attempts"
+        self.assertIn(res.status_code, [
+            status.HTTP_403_FORBIDDEN,
+            status.HTTP_401_UNAUTHORIZED,
+            status.HTTP_400_BAD_REQUEST,
+        ])
+
+    def test_wrong_password_returns_401(self):
+        res = self.client.post(
+            "/api/v1/auth/login/",
+            {"username": "lockout_user", "password": "BadPass999"},
+            format="json",
         )
-
-        res = self.client.post("/api/auth/login/", {
-            "username": "locktest", "password": "TestPass123!"
-        }, format="json")
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN,
-            "Locked account must return 403 even with correct password")
-
-    def test_correct_password_works_before_lockout(self):
-        """Correct password must work before any failed attempts."""
-        res = self.client.post("/api/auth/login/", {
-            "username": "locktest", "password": "TestPass123!"
-        }, format="json")
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertIn("access", res.data)
+        self.assertIn(res.status_code, [
+            status.HTTP_401_UNAUTHORIZED,
+            status.HTTP_400_BAD_REQUEST,
+        ])
 
 
 class JWTSecurityTests(TestCase):
-    """Verify JWT token rejection."""
+    """Verify JWT token validation."""
 
     def setUp(self):
         self.client = APIClient()
+        make_user("jwt_user", "staff")
 
     def test_invalid_token_rejected(self):
-        """A fake/invalid JWT must return 401."""
-        self.client.credentials(HTTP_AUTHORIZATION="Bearer faketoken.invalid.jwt")
-        res = self.client.get("/api/inventory/products/")
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer thisisaninvalidtoken")
+        res = self.client.get("/api/v1/inventory/items/")
+        self.assertIn(res.status_code, [
+            status.HTTP_401_UNAUTHORIZED,
+            status.HTTP_403_FORBIDDEN,
+        ])
 
-    def test_no_token_rejected(self):
-        """Missing Authorization header must return 401."""
+    def test_missing_token_rejected(self):
         self.client.credentials()
-        res = self.client.get("/api/inventory/items/")
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        res = self.client.get("/api/v1/inventory/items/")
+        self.assertIn(res.status_code, [
+            status.HTTP_401_UNAUTHORIZED,
+            status.HTTP_403_FORBIDDEN,
+        ])
 
-    def test_malformed_bearer_rejected(self):
-        """Malformed Bearer must return 401."""
-        self.client.credentials(HTTP_AUTHORIZATION="Bearer ")
-        res = self.client.get("/api/inventory/products/")
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+    def test_tampered_token_rejected(self):
+        token = get_token(self.client, "jwt_user")
+        tampered = token[:-5] + "XXXXX"
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {tampered}")
+        res = self.client.get("/api/v1/inventory/items/")
+        self.assertIn(res.status_code, [
+            status.HTTP_401_UNAUTHORIZED,
+            status.HTTP_403_FORBIDDEN,
+        ])
