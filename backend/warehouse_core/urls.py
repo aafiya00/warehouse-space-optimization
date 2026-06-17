@@ -27,10 +27,9 @@ schema_view = get_schema_view(
 
 v1_urlpatterns = [
     path('auth/', include('accounts.urls')),
-    path('warehouses/', include('warehouses.urls')),
-    path('inventory/', include('inventory.urls')),
-    path('approvals/', include('approvals.urls')),
-    path('notifications/', include('notifications.urls')),
+
+    # Specific paths first — these must come before the router includes below,
+    # otherwise WarehouseViewSet's catch-all detail route swallows them.
     path('dashboard/kpis/', DashboardKPIView.as_view(), name='dashboard-kpis'),
     path('warehouses/utilization/', WarehouseUtilizationView.as_view(), name='wh-utilization'),
     path('warehouses/overloaded-bins/', overloaded_bins, name='overloaded-bins'),
@@ -45,6 +44,12 @@ v1_urlpatterns = [
     path('reports/movements/csv/', warehouse_report_views.export_movements_csv, name='report-mov-csv'),
     path('reports/utilization/', warehouse_report_views.warehouse_utilization_report, name='report-util'),
     path('reports/movement-trends/', warehouse_report_views.movement_trends, name='report-trends'),
+
+    # Router includes go last
+    path('warehouses/', include('warehouses.urls')),
+    path('inventory/', include('inventory.urls')),
+    path('approvals/', include('approvals.urls')),
+    path('notifications/', include('notifications.urls')),
 ]
 
 urlpatterns = [
