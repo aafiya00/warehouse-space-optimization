@@ -35,9 +35,9 @@ export default function AnalyticsDashboard() {
 
   useEffect(() => {
     Promise.all([
-      api.get("/api/v1/warehouses/utilization/"),
-      api.get("/api/v1/inventory/movement-trends/"),
-      api.get("/api/v1/inventory/low-stock/"),
+      api.get("/v1/warehouses/utilization/"),
+      api.get("/v1/inventory/movement-trends/"),
+      api.get("/v1/inventory/low-stock/"),
     ])
       .then(([utilRes, trendRes, lowRes]) => {
         setUtilization(utilRes.data?.zones || []);

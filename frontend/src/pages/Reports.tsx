@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../api/client";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -18,8 +18,8 @@ export default function Reports() {
 
   useEffect(() => {
     Promise.all([
-      api.get("/api/v1/reports/utilization/"),
-      api.get("/api/v1/reports/movement-trends/"),
+      api.get("/v1/reports/utilization/"),
+      api.get("/v1/reports/movement-trends/"),
     ])
       .then(([uRes, mRes]) => {
         setUtilization(uRes.data?.zones || []);
@@ -71,22 +71,22 @@ export default function Reports() {
         <h2 className="text-lg font-semibold mb-4 text-gray-700">Export Reports</h2>
         <div className="flex flex-wrap gap-3">
           <button
-            onClick={() => downloadFile("/api/v1/reports/inventory/csv/", "inventory_report.csv")}
+            onClick={() => downloadFile("/v1/reports/inventory/csv/", "inventory_report.csv")}
             disabled={exporting !== null}
             className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 transition">
-            {exporting === "inventory_report.csv" ? "⏳ Exporting..." : "⬇️ Inventory CSV"}
+            {exporting === "inventory_report.csv" ? "? Exporting..." : "?? Inventory CSV"}
           </button>
           <button
-            onClick={() => downloadFile("/api/v1/reports/inventory/excel/", "inventory_report.xlsx")}
+            onClick={() => downloadFile("/v1/reports/inventory/excel/", "inventory_report.xlsx")}
             disabled={exporting !== null}
             className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition">
-            {exporting === "inventory_report.xlsx" ? "⏳ Exporting..." : "⬇️ Inventory Excel"}
+            {exporting === "inventory_report.xlsx" ? "? Exporting..." : "?? Inventory Excel"}
           </button>
           <button
-            onClick={() => downloadFile("/api/v1/reports/movements/csv/", "movements_report.csv")}
+            onClick={() => downloadFile("/v1/reports/movements/csv/", "movements_report.csv")}
             disabled={exporting !== null}
             className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition">
-            {exporting === "movements_report.csv" ? "⏳ Exporting..." : "⬇️ Movements CSV"}
+            {exporting === "movements_report.csv" ? "? Exporting..." : "?? Movements CSV"}
           </button>
         </div>
       </div>

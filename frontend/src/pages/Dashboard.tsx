@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../api/client";
 import LoadingSpinner from "../components/LoadingSpinner";
 
@@ -52,8 +52,8 @@ export default function Dashboard() {
 
   useEffect(() => {
     Promise.all([
-      api.get("/api/v1/dashboard/kpis/"),
-      api.get("/api/v1/warehouses/utilization/"),
+      api.get("/v1/dashboard/kpis/"),
+      api.get("/v1/warehouses/utilization/"),
     ])
       .then(([kpiRes, utilRes]) => {
         setKpis(kpiRes.data);
@@ -77,23 +77,23 @@ export default function Dashboard() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard title="Total Capacity" value={kpis.total_capacity.toLocaleString()}
-          sub="units across all bins" color="bg-indigo-600" icon="📦" />
+          sub="units across all bins" color="bg-indigo-600" icon="??" />
         <KPICard title="Used Capacity" value={kpis.used_capacity.toLocaleString()}
-          sub={`${kpis.utilization_percent}% utilization`} color="bg-blue-500" icon="📊" />
+          sub={`${kpis.utilization_percent}% utilization`} color="bg-blue-500" icon="??" />
         <KPICard title="Free Capacity" value={kpis.free_capacity.toLocaleString()}
-          sub="available space" color="bg-emerald-500" icon="✅" />
+          sub="available space" color="bg-emerald-500" icon="?" />
         <KPICard title="Utilization %" value={`${kpis.utilization_percent}%`}
-          sub="overall warehouse fill" color={kpis.utilization_percent >= 90 ? "bg-red-500" : "bg-violet-500"} icon="📈" />
+          sub="overall warehouse fill" color={kpis.utilization_percent >= 90 ? "bg-red-500" : "bg-violet-500"} icon="??" />
       </div>
 
       {/* Secondary KPIs */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         {[
-          { title: "Warehouses", value: kpis.total_warehouses, icon: "🏭" },
-          { title: "Zones", value: kpis.total_zones, icon: "🗂️" },
-          { title: "Bins", value: kpis.total_bins, icon: "🗃️" },
-          { title: "Low Stock Alerts", value: kpis.low_stock_alerts, icon: "⚠️" },
-          { title: "Overloaded Bins", value: kpis.overloaded_bins, icon: "🔴" },
+          { title: "Warehouses", value: kpis.total_warehouses, icon: "??" },
+          { title: "Zones", value: kpis.total_zones, icon: "???" },
+          { title: "Bins", value: kpis.total_bins, icon: "???" },
+          { title: "Low Stock Alerts", value: kpis.low_stock_alerts, icon: "??" },
+          { title: "Overloaded Bins", value: kpis.overloaded_bins, icon: "??" },
         ].map(card => (
           <div key={card.title} className="bg-white rounded-xl border p-4 shadow-sm text-center">
             <div className="text-3xl mb-1">{card.icon}</div>
@@ -106,7 +106,7 @@ export default function Dashboard() {
       {/* Movement Summary */}
       <div className="bg-white rounded-xl border p-5 shadow-sm">
         <h2 className="text-base font-semibold text-gray-700 mb-4">
-          Stock Movement — Last {kpis.movement_summary.period_days} Days
+          Stock Movement � Last {kpis.movement_summary.period_days} Days
         </h2>
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
