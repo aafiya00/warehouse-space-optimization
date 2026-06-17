@@ -238,3 +238,27 @@
 [2026-06-17 11:12:05,006] WARNING django.request - Not Found: /api/api/v1/warehouses/utilization/
 [2026-06-17 11:12:05,010] WARNING django.server - "GET /api/api/v1/dashboard/kpis/ HTTP/1.1" 404 3718
 [2026-06-17 11:12:05,014] WARNING django.server - "GET /api/api/v1/warehouses/utilization/ HTTP/1.1" 404 3742
+[2026-06-17 11:48:14,921] WARNING django.request - Not Found: /api/api/v1/warehouses/utilization/
+[2026-06-17 11:48:14,923] WARNING django.request - Not Found: /api/api/v1/dashboard/kpis/
+[2026-06-17 11:48:14,933] WARNING django.server - "GET /api/api/v1/warehouses/utilization/ HTTP/1.1" 404 3742
+[2026-06-17 11:48:14,935] WARNING django.server - "GET /api/api/v1/dashboard/kpis/ HTTP/1.1" 404 3718
+[2026-06-17 11:48:14,968] WARNING django.request - Not Found: /api/api/v1/warehouses/utilization/
+[2026-06-17 11:48:14,970] WARNING django.request - Not Found: /api/api/v1/dashboard/kpis/
+[2026-06-17 11:48:14,973] WARNING django.server - "GET /api/api/v1/dashboard/kpis/ HTTP/1.1" 404 3718
+[2026-06-17 11:48:14,974] WARNING django.server - "GET /api/api/v1/warehouses/utilization/ HTTP/1.1" 404 3742
+[2026-06-17 11:48:15,010] WARNING django.request - Not Found: /api/api/v1/warehouses/utilization/
+[2026-06-17 11:48:15,012] WARNING django.request - Not Found: /api/api/v1/dashboard/kpis/
+[2026-06-17 11:48:15,017] WARNING django.server - "GET /api/api/v1/dashboard/kpis/ HTTP/1.1" 404 3718
+[2026-06-17 11:48:15,018] WARNING django.server - "GET /api/api/v1/warehouses/utilization/ HTTP/1.1" 404 3742
+[2026-06-17 11:48:15,039] WARNING django.request - Not Found: /api/api/v1/dashboard/kpis/
+[2026-06-17 11:48:15,051] WARNING django.server - "GET /api/api/v1/dashboard/kpis/ HTTP/1.1" 404 3718
+[2026-06-17 11:48:15,053] WARNING django.request - Not Found: /api/api/v1/warehouses/utilization/
+[2026-06-17 11:48:15,056] WARNING django.server - "GET /api/api/v1/warehouses/utilization/ HTTP/1.1" 404 3742
+[2026-06-17 12:00:58,284] WARNING django.request - Not Found: /api/api/v1/warehouses/utilization/
+[2026-06-17 12:00:58,285] WARNING django.request - Not Found: /api/api/v1/dashboard/kpis/
+[2026-06-17 12:00:58,287] WARNING django.server - "GET /api/api/v1/warehouses/utilization/ HTTP/1.1" 404 3742
+[2026-06-17 12:00:58,299] WARNING django.server - "GET /api/api/v1/dashboard/kpis/ HTTP/1.1" 404 3718
+[2026-06-17 12:00:58,301] WARNING django.request - Not Found: /api/api/v1/warehouses/utilization/
+[2026-06-17 12:00:58,305] WARNING django.server - "GET /api/api/v1/warehouses/utilization/ HTTP/1.1" 404 3742
+[2026-06-17 12:00:58,315] WARNING django.request - Not Found: /api/api/v1/dashboard/kpis/
+[2026-06-17 12:00:58,316] WARNING django.server - "GET /api/api/v1/dashboard/kpis/ HTTP/1.1" 404 3718
