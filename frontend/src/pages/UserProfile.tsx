@@ -28,7 +28,7 @@ export default function UserProfile() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    api.get("/v1/accounts/me/").then((r) => {
+    api.get("/api/v1/accounts/me/").then((r) => {
       setUser(r.data);
       setForm({
         first_name: r.data.first_name || "",
@@ -37,13 +37,13 @@ export default function UserProfile() {
         phone: r.data.phone || "",
       });
     });
-    api.get("/v1/accounts/login-history/").then((r) => setHistory(r.data)).catch(() => {});
+    api.get("/api/v1/accounts/login-history/").then((r) => setHistory(r.data)).catch(() => {});
   }, []);
 
   const handleSave = async () => {
     setError("");
     try {
-      const r = await api.patch("/v1/accounts/me/", form);
+      const r = await api.patch("/api/v1/accounts/me/", form);
       setUser(r.data);
       setEditing(false);
       setSaved(true);
@@ -173,4 +173,5 @@ export default function UserProfile() {
     </div>
   );
 }
+
 

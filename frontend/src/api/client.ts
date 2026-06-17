@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "https://warehouse-space-optimization.onrender.com/api";
+const BASE_URL = "https://warehouse-space-optimization.onrender.com";
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -30,3 +30,4 @@ api.interceptors.response.use(
 );
 
 export default api;
+

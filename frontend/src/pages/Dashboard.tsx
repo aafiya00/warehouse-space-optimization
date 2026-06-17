@@ -52,8 +52,8 @@ export default function Dashboard() {
 
   useEffect(() => {
     Promise.all([
-      api.get("/v1/dashboard/kpis/"),
-      api.get("/v1/warehouses/utilization/"),
+      api.get("/api/v1/dashboard/kpis/"),
+      api.get("/api/v1/warehouses/utilization/"),
     ])
       .then(([kpiRes, utilRes]) => {
         setKpis(kpiRes.data);
@@ -176,4 +176,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
 
