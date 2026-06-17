@@ -162,45 +162,26 @@ LOGGING = {
             'format': '[{asctime}] {levelname} {name} - {message}',
             'style': '{',
         },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
-        },
     },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
         },
-        'request_file': {
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs' / 'requests.log',
-            'formatter': 'verbose',
-        },
-        'audit_file': {
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs' / 'audit.log',
-            'formatter': 'verbose',
-        },
-        'error_file': {
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs' / 'errors.log',
-            'formatter': 'verbose',
-        },
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'error_file'],
+            'handlers': ['console'],
             'level': 'WARNING',
             'propagate': True,
         },
         'django.request.custom': {
-            'handlers': ['console', 'request_file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },
         'audit': {
-            'handlers': ['console', 'audit_file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },
