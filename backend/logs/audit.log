@@ -193,3 +193,5 @@
 [2026-06-17 09:42:34,632] INFO audit - AUDIT | user=val_wh_admin | method=POST | path=/api/v1/warehouses/ | status=400
 [2026-06-17 09:42:38,688] INFO audit - AUDIT | user=anonymous | method=POST | path=/api/v1/auth/login/ | status=200
 [2026-06-17 09:42:38,718] INFO audit - AUDIT | user=val_wh_admin | method=POST | path=/api/v1/warehouses/ | status=400
+[2026-06-17 11:08:58,982] INFO audit - AUDIT | user=anonymous | method=POST | path=/api/auth/login/ | status=200
+[2026-06-17 11:12:04,748] INFO audit - AUDIT | user=anonymous | method=POST | path=/api/auth/login/ | status=200

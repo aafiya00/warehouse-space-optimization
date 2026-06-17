@@ -114,3 +114,127 @@
 [2026-06-17 09:42:34,622] WARNING django.request - Bad Request: /api/v1/warehouses/
 [2026-06-17 09:42:34,636] WARNING django.request - Bad Request: /api/v1/warehouses/
 [2026-06-17 09:42:38,723] WARNING django.request - Bad Request: /api/v1/warehouses/
+[2026-06-17 11:08:59,998] WARNING django.request - Not Found: /api/api/v1/dashboard/kpis/
+[2026-06-17 11:09:00,000] WARNING django.request - Not Found: /api/api/v1/warehouses/utilization/
+[2026-06-17 11:09:00,006] WARNING django.server - "GET /api/api/v1/dashboard/kpis/ HTTP/1.1" 404 3718
+[2026-06-17 11:09:00,044] WARNING django.server - "GET /api/api/v1/warehouses/utilization/ HTTP/1.1" 404 3742
+[2026-06-17 11:09:00,047] WARNING django.request - Not Found: /api/api/v1/dashboard/kpis/
+[2026-06-17 11:09:00,082] WARNING django.server - "GET /api/api/v1/dashboard/kpis/ HTTP/1.1" 404 3718
+[2026-06-17 11:09:00,084] WARNING django.request - Not Found: /api/api/v1/warehouses/utilization/
+[2026-06-17 11:09:00,097] WARNING django.server - "GET /api/api/v1/warehouses/utilization/ HTTP/1.1" 404 3742
+[2026-06-17 11:09:07,231] WARNING django.request - Forbidden: /api/warehouses/
+[2026-06-17 11:09:07,232] WARNING django.server - "GET /api/warehouses/ HTTP/1.1" 403 166
+[2026-06-17 11:09:07,243] WARNING django.request - Forbidden: /api/warehouses/
+[2026-06-17 11:09:07,244] WARNING django.server - "GET /api/warehouses/ HTTP/1.1" 403 166
+[2026-06-17 11:09:08,976] WARNING django.request - Forbidden: /api/warehouses/racks/
+[2026-06-17 11:09:08,978] WARNING django.request - Forbidden: /api/warehouses/zones/
+[2026-06-17 11:09:08,980] WARNING django.server - "GET /api/warehouses/racks/ HTTP/1.1" 403 166
+[2026-06-17 11:09:08,981] WARNING django.server - "GET /api/warehouses/zones/ HTTP/1.1" 403 166
+[2026-06-17 11:09:08,998] WARNING django.request - Forbidden: /api/warehouses/zones/
+[2026-06-17 11:09:09,003] WARNING django.request - Forbidden: /api/warehouses/racks/
+[2026-06-17 11:09:09,005] WARNING django.server - "GET /api/warehouses/zones/ HTTP/1.1" 403 166
+[2026-06-17 11:09:09,006] WARNING django.server - "GET /api/warehouses/racks/ HTTP/1.1" 403 166
+[2026-06-17 11:09:09,936] WARNING django.request - Forbidden: /api/warehouses/zones/
+[2026-06-17 11:09:09,938] WARNING django.request - Forbidden: /api/warehouses/
+[2026-06-17 11:09:09,940] WARNING django.server - "GET /api/warehouses/zones/ HTTP/1.1" 403 166
+[2026-06-17 11:09:09,942] WARNING django.server - "GET /api/warehouses/ HTTP/1.1" 403 166
+[2026-06-17 11:09:09,958] WARNING django.request - Forbidden: /api/warehouses/zones/
+[2026-06-17 11:09:09,961] WARNING django.request - Forbidden: /api/warehouses/
+[2026-06-17 11:09:09,962] WARNING django.server - "GET /api/warehouses/zones/ HTTP/1.1" 403 166
+[2026-06-17 11:09:09,964] WARNING django.server - "GET /api/warehouses/ HTTP/1.1" 403 166
+[2026-06-17 11:09:11,174] WARNING django.request - Forbidden: /api/warehouses/racks/
+[2026-06-17 11:09:11,175] WARNING django.server - "GET /api/warehouses/racks/ HTTP/1.1" 403 166
+[2026-06-17 11:09:11,183] WARNING django.request - Forbidden: /api/warehouses/bins/
+[2026-06-17 11:09:11,185] WARNING django.server - "GET /api/warehouses/bins/ HTTP/1.1" 403 166
+[2026-06-17 11:09:11,199] WARNING django.request - Forbidden: /api/warehouses/racks/
+[2026-06-17 11:09:11,201] WARNING django.server - "GET /api/warehouses/racks/ HTTP/1.1" 403 166
+[2026-06-17 11:09:11,208] WARNING django.request - Forbidden: /api/warehouses/bins/
+[2026-06-17 11:09:11,210] WARNING django.server - "GET /api/warehouses/bins/ HTTP/1.1" 403 166
+[2026-06-17 11:09:14,569] WARNING django.request - Not Found: /api/api/v1/dashboard/kpis/
+[2026-06-17 11:09:14,578] WARNING django.request - Not Found: /api/api/v1/warehouses/utilization/
+[2026-06-17 11:09:14,580] WARNING django.server - "GET /api/api/v1/dashboard/kpis/ HTTP/1.1" 404 3718
+[2026-06-17 11:09:14,580] WARNING django.server - "GET /api/api/v1/warehouses/utilization/ HTTP/1.1" 404 3742
+[2026-06-17 11:09:14,613] WARNING django.request - Not Found: /api/api/v1/dashboard/kpis/
+[2026-06-17 11:09:14,616] WARNING django.request - Not Found: /api/api/v1/warehouses/utilization/
+[2026-06-17 11:09:14,619] WARNING django.server - "GET /api/api/v1/dashboard/kpis/ HTTP/1.1" 404 3718
+[2026-06-17 11:09:14,619] WARNING django.server - "GET /api/api/v1/warehouses/utilization/ HTTP/1.1" 404 3742
+[2026-06-17 11:11:01,421] WARNING django.request - Forbidden: /api/warehouses/
+[2026-06-17 11:11:01,423] WARNING django.server - "GET /api/warehouses/ HTTP/1.1" 403 166
+[2026-06-17 11:11:01,438] WARNING django.request - Forbidden: /api/warehouses/
+[2026-06-17 11:11:01,440] WARNING django.server - "GET /api/warehouses/ HTTP/1.1" 403 166
+[2026-06-17 11:11:02,421] WARNING django.request - Forbidden: /api/warehouses/racks/
+[2026-06-17 11:11:02,425] WARNING django.request - Forbidden: /api/warehouses/zones/
+[2026-06-17 11:11:02,425] WARNING django.server - "GET /api/warehouses/racks/ HTTP/1.1" 403 166
+[2026-06-17 11:11:02,428] WARNING django.server - "GET /api/warehouses/zones/ HTTP/1.1" 403 166
+[2026-06-17 11:11:02,448] WARNING django.request - Forbidden: /api/warehouses/racks/
+[2026-06-17 11:11:02,449] WARNING django.request - Forbidden: /api/warehouses/zones/
+[2026-06-17 11:11:02,452] WARNING django.server - "GET /api/warehouses/zones/ HTTP/1.1" 403 166
+[2026-06-17 11:11:02,453] WARNING django.server - "GET /api/warehouses/racks/ HTTP/1.1" 403 166
+[2026-06-17 11:11:03,631] WARNING django.request - Forbidden: /api/inventory/suppliers/
+[2026-06-17 11:11:03,632] WARNING django.server - "GET /api/inventory/suppliers/ HTTP/1.1" 403 166
+[2026-06-17 11:11:03,646] WARNING django.request - Forbidden: /api/inventory/suppliers/
+[2026-06-17 11:11:03,648] WARNING django.server - "GET /api/inventory/suppliers/ HTTP/1.1" 403 166
+[2026-06-17 11:11:04,678] WARNING django.request - Forbidden: /api/warehouses/bins/
+[2026-06-17 11:11:04,681] WARNING django.request - Forbidden: /api/inventory/products/
+[2026-06-17 11:11:04,681] WARNING django.server - "GET /api/warehouses/bins/ HTTP/1.1" 403 166
+[2026-06-17 11:11:04,723] WARNING django.server - "GET /api/inventory/products/ HTTP/1.1" 403 166
+[2026-06-17 11:11:04,748] WARNING django.request - Forbidden: /api/warehouses/bins/
+[2026-06-17 11:11:04,755] WARNING django.request - Forbidden: /api/inventory/products/
+[2026-06-17 11:11:04,756] WARNING django.server - "GET /api/warehouses/bins/ HTTP/1.1" 403 166
+[2026-06-17 11:11:04,757] WARNING django.server - "GET /api/inventory/products/ HTTP/1.1" 403 166
+[2026-06-17 11:11:05,856] WARNING django.request - Not Found: /api/api/v1/warehouses/utilization/
+[2026-06-17 11:11:05,862] WARNING django.request - Not Found: /api/api/v1/inventory/movement-trends/
+[2026-06-17 11:11:05,866] WARNING django.request - Not Found: /api/api/v1/inventory/low-stock/
+[2026-06-17 11:11:05,867] WARNING django.server - "GET /api/api/v1/warehouses/utilization/ HTTP/1.1" 404 3742
+[2026-06-17 11:11:05,867] WARNING django.server - "GET /api/api/v1/inventory/movement-trends/ HTTP/1.1" 404 3751
+[2026-06-17 11:11:05,883] WARNING django.request - Not Found: /api/api/v1/warehouses/utilization/
+[2026-06-17 11:11:05,884] WARNING django.server - "GET /api/api/v1/inventory/low-stock/ HTTP/1.1" 404 3733
+[2026-06-17 11:11:05,894] WARNING django.request - Not Found: /api/api/v1/inventory/movement-trends/
+[2026-06-17 11:11:05,896] WARNING django.server - "GET /api/api/v1/warehouses/utilization/ HTTP/1.1" 404 3742
+[2026-06-17 11:11:05,898] WARNING django.server - "GET /api/api/v1/inventory/movement-trends/ HTTP/1.1" 404 3751
+[2026-06-17 11:11:05,906] WARNING django.request - Not Found: /api/api/v1/inventory/low-stock/
+[2026-06-17 11:11:05,907] WARNING django.server - "GET /api/api/v1/inventory/low-stock/ HTTP/1.1" 404 3733
+[2026-06-17 11:11:08,671] WARNING django.request - Forbidden: /api/inventory/products/
+[2026-06-17 11:11:08,672] WARNING django.server - "GET /api/inventory/products/ HTTP/1.1" 403 166
+[2026-06-17 11:11:08,680] WARNING django.request - Forbidden: /api/inventory/products/
+[2026-06-17 11:11:08,682] WARNING django.server - "GET /api/inventory/products/ HTTP/1.1" 403 166
+[2026-06-17 11:11:09,707] WARNING django.request - Not Found: /api/api/v1/reports/movement-trends/
+[2026-06-17 11:11:09,708] WARNING django.request - Not Found: /api/api/v1/reports/utilization/
+[2026-06-17 11:11:09,710] WARNING django.server - "GET /api/api/v1/reports/movement-trends/ HTTP/1.1" 404 3745
+[2026-06-17 11:11:09,711] WARNING django.server - "GET /api/api/v1/reports/utilization/ HTTP/1.1" 404 3733
+[2026-06-17 11:11:09,733] WARNING django.request - Not Found: /api/api/v1/reports/movement-trends/
+[2026-06-17 11:11:09,735] WARNING django.request - Not Found: /api/api/v1/reports/utilization/
+[2026-06-17 11:11:09,737] WARNING django.server - "GET /api/api/v1/reports/movement-trends/ HTTP/1.1" 404 3745
+[2026-06-17 11:11:09,737] WARNING django.server - "GET /api/api/v1/reports/utilization/ HTTP/1.1" 404 3733
+[2026-06-17 11:11:14,564] WARNING django.request - Forbidden: /api/warehouses/bins/
+[2026-06-17 11:11:14,573] WARNING django.request - Forbidden: /api/inventory/products/
+[2026-06-17 11:11:14,574] WARNING django.server - "GET /api/warehouses/bins/ HTTP/1.1" 403 166
+[2026-06-17 11:11:14,579] WARNING django.server - "GET /api/inventory/products/ HTTP/1.1" 403 166
+[2026-06-17 11:11:14,595] WARNING django.request - Forbidden: /api/warehouses/bins/
+[2026-06-17 11:11:14,596] WARNING django.server - "GET /api/warehouses/bins/ HTTP/1.1" 403 166
+[2026-06-17 11:11:14,600] WARNING django.request - Forbidden: /api/inventory/products/
+[2026-06-17 11:11:14,610] WARNING django.server - "GET /api/inventory/products/ HTTP/1.1" 403 166
+[2026-06-17 11:11:19,469] WARNING django.request - Not Found: /api/api/v1/dashboard/kpis/
+[2026-06-17 11:11:19,482] WARNING django.request - Not Found: /api/api/v1/warehouses/utilization/
+[2026-06-17 11:11:19,484] WARNING django.server - "GET /api/api/v1/dashboard/kpis/ HTTP/1.1" 404 3718
+[2026-06-17 11:11:19,485] WARNING django.server - "GET /api/api/v1/warehouses/utilization/ HTTP/1.1" 404 3742
+[2026-06-17 11:11:19,513] WARNING django.request - Not Found: /api/api/v1/warehouses/utilization/
+[2026-06-17 11:11:19,514] WARNING django.request - Not Found: /api/api/v1/dashboard/kpis/
+[2026-06-17 11:11:19,516] WARNING django.server - "GET /api/api/v1/warehouses/utilization/ HTTP/1.1" 404 3742
+[2026-06-17 11:11:19,517] WARNING django.server - "GET /api/api/v1/dashboard/kpis/ HTTP/1.1" 404 3718
+[2026-06-17 11:11:57,392] WARNING django.request - Not Found: /api/api/v1/warehouses/utilization/
+[2026-06-17 11:11:57,393] WARNING django.request - Not Found: /api/api/v1/dashboard/kpis/
+[2026-06-17 11:11:57,395] WARNING django.server - "GET /api/api/v1/warehouses/utilization/ HTTP/1.1" 404 3742
+[2026-06-17 11:11:57,395] WARNING django.server - "GET /api/api/v1/dashboard/kpis/ HTTP/1.1" 404 3718
+[2026-06-17 11:11:57,439] WARNING django.request - Not Found: /api/api/v1/dashboard/kpis/
+[2026-06-17 11:11:57,440] WARNING django.request - Not Found: /api/api/v1/warehouses/utilization/
+[2026-06-17 11:11:57,444] WARNING django.server - "GET /api/api/v1/dashboard/kpis/ HTTP/1.1" 404 3718
+[2026-06-17 11:11:57,445] WARNING django.server - "GET /api/api/v1/warehouses/utilization/ HTTP/1.1" 404 3742
+[2026-06-17 11:12:04,940] WARNING django.request - Not Found: /api/api/v1/dashboard/kpis/
+[2026-06-17 11:12:04,947] WARNING django.request - Not Found: /api/api/v1/warehouses/utilization/
+[2026-06-17 11:12:04,949] WARNING django.server - "GET /api/api/v1/dashboard/kpis/ HTTP/1.1" 404 3718
+[2026-06-17 11:12:04,952] WARNING django.server - "GET /api/api/v1/warehouses/utilization/ HTTP/1.1" 404 3742
+[2026-06-17 11:12:04,993] WARNING django.request - Not Found: /api/api/v1/dashboard/kpis/
+[2026-06-17 11:12:05,006] WARNING django.request - Not Found: /api/api/v1/warehouses/utilization/
+[2026-06-17 11:12:05,010] WARNING django.server - "GET /api/api/v1/dashboard/kpis/ HTTP/1.1" 404 3718
+[2026-06-17 11:12:05,014] WARNING django.server - "GET /api/api/v1/warehouses/utilization/ HTTP/1.1" 404 3742
