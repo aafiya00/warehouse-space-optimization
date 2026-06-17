@@ -5,10 +5,10 @@ interface InventoryItem { id: number; product: number; product_name?: string; bi
 interface Product { id: number; name: string; sku: string; }
 interface Bin { id: number; code: string; rack: number; }
 
-const INV_API = "http://localhost:8000/api/inventory/items/";
-const PROD_API = "http://localhost:8000/api/inventory/products/";
-const BIN_API = "http://localhost:8000/api/warehouses/bins/";
-const MOVE_API = "http://localhost:8000/api/inventory/movements/";
+const INV_API = "https://warehouse-space-optimization.onrender.com/api/inventory/items/";
+const PROD_API = "https://warehouse-space-optimization.onrender.com/api/inventory/products/";
+const BIN_API = "https://warehouse-space-optimization.onrender.com/api/warehouses/bins/";
+const MOVE_API = "https://warehouse-space-optimization.onrender.com/api/inventory/movements/";
 
 export default function Inventory() {
   const [items, setItems] = useState<InventoryItem[]>([]);

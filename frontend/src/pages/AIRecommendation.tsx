@@ -5,7 +5,7 @@ interface Product { id: number; name: string; sku: string; }
 interface BinResult { bin_code: string; rack: string; zone: string; warehouse: string; capacity: number; available_space: number; current_utilization_percent: number; utilization_after_placement_percent: number; ai_score?: number; reasons?: string[]; }
 interface Prediction { product_name: string; sku: string; current_stock: number; reorder_level: number; daily_consumption_rate: number; days_of_stock_remaining: number | string; needs_reorder: boolean; urgency: string; }
 
-const BASE = "http://localhost:8000/api/warehouses";
+const BASE = "https://warehouse-space-optimization.onrender.com/api/warehouses";
 
 export default function AIRecommendation() {
   const [tab, setTab] = useState<"bin" | "reorder" | "forecast">("bin");
@@ -22,7 +22,7 @@ export default function AIRecommendation() {
   const headers = { Authorization: `Bearer ${token}` };
 
   useEffect(() => {
-    axios.get("http://localhost:8000/api/inventory/products/", { headers })
+    axios.get("https://warehouse-space-optimization.onrender.com/api/inventory/products/", { headers })
       .then(r => setProducts(r.data.results ?? r.data));
   }, []);
 

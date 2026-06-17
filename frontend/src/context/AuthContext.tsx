@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (username: string, password: string) => {
     // Step 1: get JWT tokens
     const res = await axios.post(
-      "http://localhost:8000/api/auth/login/",
+      "https://warehouse-space-optimization.onrender.com/api/auth/login/",
       { username, password }
     );
     const { access, refresh } = res.data;
@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("refresh", refresh);
 
     // Step 2: fetch real user profile to get actual role
-    const profileRes = await axios.get("http://localhost:8000/api/auth/me/", {
+    const profileRes = await axios.get("https://warehouse-space-optimization.onrender.com/api/auth/me/", {
       headers: { Authorization: `Bearer ${access}` },
     });
     const userData: User = {
