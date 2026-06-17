@@ -8,7 +8,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import send_mail
 from django.conf import settings
-from .serializers import UserSerializer, RegisterSerializer, AuditLogSerializer
+from .serializers import UserSerializer, RegisterSerializer, AuditLogSerializer, CustomTokenObtainPairSerializer
 from .models import AuditLog, LoginHistory
 
 User = get_user_model()
@@ -57,6 +57,8 @@ class ChangePasswordView(APIView):
 
 
 class SecureLoginView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
     def post(self, request, *args, **kwargs):
         username = request.data.get('username', '')
         try:

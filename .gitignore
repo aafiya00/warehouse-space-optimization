@@ -12,3 +12,5 @@ frontend/dist/
 *.env
 
 .vscode/
+.vercel
+.env*
